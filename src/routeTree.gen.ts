@@ -9,12 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SalesRouteImport } from './routes/sales'
 import { Route as OutgoingRouteImport } from './routes/outgoing'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as IncomingRouteImport } from './routes/incoming'
+import { Route as EmployeesRouteImport } from './routes/employees'
 import { Route as AzizRouteImport } from './routes/aziz'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SalesRoute = SalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OutgoingRoute = OutgoingRouteImport.update({
   id: '/outgoing',
   path: '/outgoing',
@@ -28,6 +35,11 @@ const InventoryRoute = InventoryRouteImport.update({
 const IncomingRoute = IncomingRouteImport.update({
   id: '/incoming',
   path: '/incoming',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeesRoute = EmployeesRouteImport.update({
+  id: '/employees',
+  path: '/employees',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AzizRoute = AzizRouteImport.update({
@@ -44,43 +56,80 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aziz': typeof AzizRoute
+  '/employees': typeof EmployeesRoute
   '/incoming': typeof IncomingRoute
   '/inventory': typeof InventoryRoute
   '/outgoing': typeof OutgoingRoute
+  '/sales': typeof SalesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aziz': typeof AzizRoute
+  '/employees': typeof EmployeesRoute
   '/incoming': typeof IncomingRoute
   '/inventory': typeof InventoryRoute
   '/outgoing': typeof OutgoingRoute
+  '/sales': typeof SalesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/aziz': typeof AzizRoute
+  '/employees': typeof EmployeesRoute
   '/incoming': typeof IncomingRoute
   '/inventory': typeof InventoryRoute
   '/outgoing': typeof OutgoingRoute
+  '/sales': typeof SalesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/aziz' | '/incoming' | '/inventory' | '/outgoing'
+  fullPaths:
+    | '/'
+    | '/aziz'
+    | '/employees'
+    | '/incoming'
+    | '/inventory'
+    | '/outgoing'
+    | '/sales'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/aziz' | '/incoming' | '/inventory' | '/outgoing'
-  id: '__root__' | '/' | '/aziz' | '/incoming' | '/inventory' | '/outgoing'
+  to:
+    | '/'
+    | '/aziz'
+    | '/employees'
+    | '/incoming'
+    | '/inventory'
+    | '/outgoing'
+    | '/sales'
+  id:
+    | '__root__'
+    | '/'
+    | '/aziz'
+    | '/employees'
+    | '/incoming'
+    | '/inventory'
+    | '/outgoing'
+    | '/sales'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AzizRoute: typeof AzizRoute
+  EmployeesRoute: typeof EmployeesRoute
   IncomingRoute: typeof IncomingRoute
   InventoryRoute: typeof InventoryRoute
   OutgoingRoute: typeof OutgoingRoute
+  SalesRoute: typeof SalesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sales': {
+      id: '/sales'
+      path: '/sales'
+      fullPath: '/sales'
+      preLoaderRoute: typeof SalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/outgoing': {
       id: '/outgoing'
       path: '/outgoing'
@@ -100,6 +149,13 @@ declare module '@tanstack/react-router' {
       path: '/incoming'
       fullPath: '/incoming'
       preLoaderRoute: typeof IncomingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employees': {
+      id: '/employees'
+      path: '/employees'
+      fullPath: '/employees'
+      preLoaderRoute: typeof EmployeesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aziz': {
@@ -122,9 +178,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AzizRoute: AzizRoute,
+  EmployeesRoute: EmployeesRoute,
   IncomingRoute: IncomingRoute,
   InventoryRoute: InventoryRoute,
   OutgoingRoute: OutgoingRoute,
+  SalesRoute: SalesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

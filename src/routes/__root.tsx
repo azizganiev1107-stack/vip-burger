@@ -8,7 +8,9 @@ import {
   Send, 
   History,
   Menu,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart,
+  Users
 } from 'lucide-react'
 import { useState } from 'react'
 import { clsx, type ClassValue } from 'clsx'
@@ -31,6 +33,8 @@ function RootLayout() {
     { label: 'Kiris', to: '/incoming', icon: ArrowDownLeft },
     { label: 'Shıǵıs', to: '/outgoing', icon: ArrowUpRight },
     { label: '3 filial', to: '/aziz', icon: Send },
+    { label: 'Satıw', to: '/sales', icon: ShoppingCart },
+    { label: 'Xızmetkerler', to: '/employees', icon: Users },
   ]
 
   return (
