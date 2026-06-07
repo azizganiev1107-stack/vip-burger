@@ -24,6 +24,7 @@ function ProductsPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
   
   // Form state
   const [name, setName] = useState('')
@@ -145,7 +146,12 @@ function ProductsPage() {
                     <td className="px-6 py-4 text-sm font-medium text-slate-900">#{product.id}</td>
                     <td className="px-6 py-4">
                       {product.image ? (
-                        <img src={typeof product.image === 'string' ? product.image : ''} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-slate-200" />
+                        <img 
+                          src={typeof product.image === 'string' ? product.image : ''} 
+                          alt={product.name} 
+                          className="w-12 h-12 object-cover rounded-lg border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity" 
+                          onClick={() => setPreviewImage(typeof product.image === 'string' ? product.image : null)}
+                        />
                       ) : (
                         <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-400">
                           <ImageIcon className="w-5 h-5" />
@@ -206,6 +212,21 @@ function ProductsPage() {
                   <input type="number" value={price} onChange={e => setPrice(e.target.value)} required min="0" step="0.01" placeholder={t('products.modal.price_placeholder')} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('products.modal.photo_label')}</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={e => setImage(e.target.files?.[0] || '')} 
+                    className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
+                  />
+                  {editingProduct && typeof image === 'string' && image && (
+                    <div className="mt-2 text-sm text-slate-500">
+                      {t('products.modal.current_photo')} <a href={image} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline">Súwret</a>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-2 mt-4 pt-2">
                   <input type="checkbox" id="isActive" checked={isActive} onChange={e => setIsActive(e.target.checked)} className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
                   <label htmlFor="isActive" className="text-sm font-medium text-slate-700 cursor-pointer">
@@ -221,6 +242,29 @@ function ProductsPage() {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] flex items-center justify-center">
+            <button 
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 md:-right-12 text-white/70 hover:text-white p-2 transition-colors bg-black/20 hover:bg-black/40 rounded-full"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10"
+              onClick={(e) => e.stopPropagation()} 
+            />
           </div>
         </div>
       )}

@@ -28,7 +28,7 @@ function LoginPage() {
       localStorage.setItem('auth', JSON.stringify({ state: { user: res } }))
 
       toast.success(t('common.login_success'))
-      navigate({ to: '/warehouse', replace: true })
+      navigate({ to: '/products', replace: true })
     },
     onError: (err: any) => {
       setErrorMsg(err.message || t('login.error'))

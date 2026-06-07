@@ -346,7 +346,7 @@ function MovementsTab() {
 
   const [item, setItem] = useState<number | ''>('')
   const [quantity, setQuantity] = useState('')
-  const [type, setType] = useState('IN')
+  const [type, setType] = useState('in')
   const [warehouse, setWarehouse] = useState<number | ''>('')
 
   const movements = data?.data || []
@@ -356,7 +356,7 @@ function MovementsTab() {
   const openCreateModal = () => {
     setItem('')
     setQuantity('')
-    setType('IN')
+    setType('in')
     setWarehouse('')
     setErrorMsg('')
     setIsModalOpen(true)
@@ -467,8 +467,8 @@ function MovementsTab() {
                     onChange={(e) => setType(e.target.value)}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   >
-                    <option value="IN">{t('warehouse.movements.modal.type_in')}</option>
-                    <option value="OUT">{t('warehouse.movements.modal.type_out')}</option>
+                    <option value="in">{t('warehouse.movements.modal.type_in')}</option>
+                    <option value="out">{t('warehouse.movements.modal.type_out')}</option>
                   </select>
                 </div>
 

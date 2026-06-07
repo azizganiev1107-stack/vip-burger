@@ -6,9 +6,10 @@ import {
   useGetOrders, 
   useCreateOrder, 
   usePatchOrder, 
-  useDeleteOrder 
+  useDeleteOrder,
+  useGetProducts
 } from '@/services/orders'
-import type { IOrder } from '@/services/orders'
+import type { IOrder, IOrderItem } from '@/services/orders'
 import { ShoppingBag, Plus, Edit2, Trash2, Loader2, X } from 'lucide-react'
 
 export const Route = createFileRoute('/orders')({
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/orders')({
 function OrdersPage() {
   const { t } = useTranslation()
   const { data, isLoading } = useGetOrders({ limit: 100 })
+  const { data: productsData } = useGetProducts({ limit: 100 })
   const createOrder = useCreateOrder()
   const patchOrder = usePatchOrder()
   const deleteOrder = useDeleteOrder()
@@ -26,29 +28,37 @@ function OrdersPage() {
   const [editingOrder, setEditingOrder] = useState<IOrder | null>(null)
   
   // Form state
-  const [totalAmount, setTotalAmount] = useState('')
   const [phone, setPhone] = useState('')
   const [paymentType, setPaymentType] = useState('cash')
   const [isPaid, setIsPaid] = useState(false)
   const [status, setStatus] = useState('pending')
+  const [items, setItems] = useState<IOrderItem[]>([])
+  
+  // Temp item form
+  const [tempProductId, setTempProductId] = useState('')
+  const [tempQuantity, setTempQuantity] = useState('1')
 
   const openCreateModal = () => {
     setEditingOrder(null)
-    setTotalAmount('')
     setPhone('')
     setPaymentType('cash')
     setIsPaid(false)
     setStatus('pending')
+    setItems([])
+    setTempProductId('')
+    setTempQuantity('1')
     setIsModalOpen(true)
   }
 
   const openEditModal = (order: IOrder) => {
     setEditingOrder(order)
-    setTotalAmount(order.total_amount || '')
     setPhone(order.phone || '')
     setPaymentType(order.payment_type || 'cash')
     setIsPaid(order.is_paid || false)
     setStatus(order.status || 'pending')
+    setItems(order.items?.map(i => ({ product: i.product, quantity: i.quantity, price: i.price })) || [])
+    setTempProductId('')
+    setTempQuantity('1')
     setIsModalOpen(true)
   }
 
@@ -61,11 +71,12 @@ function OrdersPage() {
     e.preventDefault()
 
     const payload: any = {
-      total_amount: totalAmount,
+      total_amount: calculatedTotal.toFixed(2),
       phone,
       payment_type: paymentType,
       is_paid: isPaid,
-      status
+      status,
+      items
     }
 
     if (editingOrder) {
@@ -97,6 +108,23 @@ function OrdersPage() {
   }
 
   const orders = data?.data || []
+  const availableProducts = productsData?.data || []
+
+  const calculatedTotal = items.reduce((sum, item) => {
+    const prod = availableProducts.find(p => p.id === item.product)
+    return sum + (prod ? parseFloat(prod.price) * item.quantity : 0)
+  }, 0)
+
+  const handleAddItem = () => {
+    if (!tempProductId || !tempQuantity) return
+    setItems([...items, { product: parseInt(tempProductId), quantity: parseInt(tempQuantity) }])
+    setTempProductId('')
+    setTempQuantity('1')
+  }
+
+  const handleRemoveItem = (index: number) => {
+    setItems(items.filter((_, i) => i !== index))
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -188,11 +216,6 @@ function OrdersPage() {
             <div className="p-5">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('orders.table.amount')} *</label>
-                  <input type="number" value={totalAmount} onChange={e => setTotalAmount(e.target.value)} required min="0" step="0.01" className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
-                </div>
-                
-                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('orders.modal.phone_label')}</label>
                   <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                 </div>
@@ -207,11 +230,64 @@ function OrdersPage() {
                   </select>
                 </div>
 
+                <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('orders.modal.items_label') || 'Ónimler'}</label>
+                  
+                  {items.length > 0 && (
+                    <div className="mb-3 space-y-2">
+                      {items.map((item, idx) => {
+                        const prod = availableProducts.find(p => p.id === item.product)
+                        return (
+                          <div key={idx} className="flex items-center justify-between bg-white p-2 border border-slate-200 rounded-lg text-sm">
+                            <span>{prod ? prod.name : `ID: ${item.product}`} x {item.quantity}</span>
+                            <button type="button" onClick={() => handleRemoveItem(idx)} className="text-red-500 hover:text-red-700">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <select 
+                      value={tempProductId} 
+                      onChange={e => setTempProductId(e.target.value)} 
+                      className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    >
+                      <option value="">{t('orders.modal.select_product') || 'Ónimdi tańlań...'}</option>
+                      {availableProducts.map(p => (
+                        <option key={p.id} value={p.id}>{p.name} ({p.price})</option>
+                      ))}
+                    </select>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value={tempQuantity} 
+                      onChange={e => setTempQuantity(e.target.value)} 
+                      className="w-20 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={handleAddItem}
+                      disabled={!tempProductId}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-colors"
+                    >
+                      {t('orders.modal.add_btn') || 'Qosıw'}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-2 mt-4 pt-2">
                   <input type="checkbox" id="isPaid" checked={isPaid} onChange={e => setIsPaid(e.target.checked)} className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
                   <label htmlFor="isPaid" className="text-sm font-medium text-slate-700 cursor-pointer">
                     {t('orders.modal.is_paid_label')}
                   </label>
+                </div>
+
+                <div className="bg-emerald-50 rounded-xl p-4 mt-4 flex items-center justify-between border border-emerald-100">
+                  <span className="text-emerald-800 font-medium">Ulıwma summa:</span>
+                  <span className="text-emerald-900 font-bold text-lg">{calculatedTotal.toLocaleString('ru-RU')} UZS</span>
                 </div>
 
                 <div className="pt-4 flex gap-3">
