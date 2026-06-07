@@ -1,0 +1,413 @@
+{
+  "products": {
+    "title": "Menyu / Ónimler",
+    "subtitle": "Tovarlar katalogı hám bahaların basqarıw",
+    "add_product": "Ónim qosıw",
+    "table": {
+      "id": "ID",
+      "photo": "Súwret",
+      "name": "Ataması",
+      "price": "Bahası",
+      "status": "Statusı",
+      "actions": "Háreketler",
+      "not_found": "Ónimler tabılmadı"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Aktiv emes"
+    },
+    "modal": {
+      "edit_title": "Ónimdi ózgertiw",
+      "new_title": "Taza ónim",
+      "name_label": "Ataması",
+      "name_placeholder": "Chizburger",
+      "price_label": "Bahası (UZS)",
+      "price_placeholder": "25000",
+      "desc_label": "Túsindirmesi (májbúriy emes)",
+      "desc_placeholder": "Ónim quramı...",
+      "photo_label": "Ónim súwreti",
+      "current_photo": "Házirgi súwret: ",
+      "is_active_label": "Ónim bar (aktiv)",
+      "choose_file": "Fayldı tańlań",
+      "no_file_chosen": "Fayl tańlanbadı",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "delete_confirm": "Usı ónimdi haqıyqattan da óshirip taslamaqshısız ba?",
+      "save_error": "Saqlawda qátelik"
+    }
+  },
+  "orders": {
+    "title": "Buyırtpalar",
+    "subtitle": "Barlıq qarıydarlar buyırtpaların basqarıw",
+    "new_order": "Taza buyırtpa",
+    "table": {
+      "id": "Buyırtpa ID",
+      "employee": "Xızmetker / Kassir",
+      "amount": "Summa",
+      "payment_status": "Tólew statusı",
+      "date": "Sáne",
+      "actions": "Háreketler",
+      "not_found": "Buyırtpalar tabılmadı"
+    },
+    "status": {
+      "paid": "Tólengen",
+      "pending": "Tólemdi kútpekte"
+    },
+    "modal": {
+      "edit_title": "Buyırtpanı ózgertiw",
+      "new_title": "Taza buyırtpa",
+      "employee_label": "Xızmetker (Kassir)",
+      "not_selected": "Tańlanbaǵan",
+      "phone_label": "Telefon nomeri",
+      "payment_type": "Tólew túri",
+      "cash": "Naq pul (Cash)",
+      "card": "Karta (Card)",
+      "items_label": "Buyırtpadaǵı ónimler (Items)",
+      "product_id": "Ónim ID",
+      "pcs": "dana",
+      "select_product": "Ónimdi tańlań...",
+      "add_btn": "Qosıw",
+      "is_paid_label": "Buyırtpa tólengen",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "delete_confirm": "Usı buyırtpanı haqıyqattan da óshirip taslamaqshısız ba?",
+      "save_error": "Saqlawda qátelik"
+    }
+  },
+  "shifts": {
+    "title": "Jumıs smenaları",
+    "subtitle": "Xızmetkerler grafigi hám smenaların basqarıw",
+    "add_shift": "Smena qosıw",
+    "table": {
+      "id": "ID",
+      "type": "Smena túri",
+      "start": "Baslanıwı",
+      "end": "Tawsılıwı",
+      "actions": "Háreketler",
+      "not_found": "Smenalar tabılmadı"
+    },
+    "type_prefix": "Túri",
+    "standard": "Standart",
+    "modal": {
+      "edit_title": "Smenanı ózgertiw",
+      "new_title": "Taza smena",
+      "shift_type": "Smena túri",
+      "day": "Kúndizgi (1)",
+      "night": "Túngi (2)",
+      "full_day": "Sutkalıq (3)",
+      "start_time": "Baslanıw waqtı",
+      "end_time": "Tawsılıw waqtı",
+      "datetime_placeholder": "kk.aa.jjjj ss:mm",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "delete_confirm": "Usı smenanı haqıyqattan da óshirip taslamaqshısız ba?"
+    }
+  },
+  "warehouse": {
+    "title": "Sklad",
+    "subtitle": "Zapaslardı, tovarlardı hám logistikanı basqarıw",
+    "tabs": {
+      "items": "Tovarlar",
+      "inventory": "Inventar",
+      "movements": "Háreket",
+      "suppliers": "Jetkerip beriwshiler",
+      "settings": "Sazlawlar"
+    },
+    "items": {
+      "new_item": "Taza tovar",
+      "table": {
+        "id": "ID",
+        "name": "Ataması",
+        "supplier": "Jetkerip beriwshi",
+        "unit": "Ólshem",
+        "price": "Satıp alıw bahası",
+        "actions": "Háreketler",
+        "edit": "Ózg.",
+        "delete": "Óshiriw"
+      },
+      "not_found": "Tovarlar tabılmadı",
+      "modal": {
+        "edit_title": "Tovardı ózgertiw",
+        "new_title": "Taza tovar",
+        "name": "Ataması",
+        "supplier": "Jetkerip beriwshi",
+        "not_selected": "Tańlanbaǵan",
+        "unit": "Ólshem",
+        "price": "Satıp alıw bahası (eger bolsa)",
+        "cancel": "Biykarlaw",
+        "save": "Saqlaw",
+        "save_error": "Saqlawda qátelik",
+        "delete_confirm": "Usı tovardı óshirip taslamaqshısız ba?"
+      }
+    },
+    "inventory": {
+      "table": {
+        "id": "ID",
+        "item": "Tovar (Item ID)",
+        "warehouse": "Sklad (Warehouse ID)",
+        "quantity": "Muǵdarı"
+      },
+      "not_found": "Inventar bos"
+    },
+    "movements": {
+      "new_movement": "Taza háreket",
+      "table": {
+        "id": "ID",
+        "item": "Tovar",
+        "quantity": "Muǵdarı",
+        "type": "Háreket túri",
+        "warehouse": "Sklad"
+      },
+      "not_found": "Háreketler tabılmadı",
+      "modal": {
+        "title": "Tovardıń taza háreketi",
+        "item": "Tovar",
+        "select_item": "Tovardı tańlań...",
+        "quantity": "Muǵdarı",
+        "type": "Háreket túri",
+        "type_in": "Kiriw (IN)",
+        "type_out": "Shıǵıw (OUT)",
+        "warehouse": "Sklad",
+        "select_warehouse": "Skladı tańlań..."
+      }
+    },
+    "suppliers": {
+      "new_supplier": "Taza jetkerip beriwshi",
+      "table": {
+        "id": "ID",
+        "name": "Ataması",
+        "phone": "Telefon",
+        "address": "Mánzili",
+        "actions": "Háreketler",
+        "edit": "Ózg.",
+        "delete": "Óshiriw"
+      },
+      "not_found": "Jetkerip beriwshiler tabılmadı",
+      "modal": {
+        "edit_title": "Jetkerip beriwshini ózgertiw",
+        "new_title": "Taza jetkerip beriwshi",
+        "name": "Ataması",
+        "phone": "Telefon",
+        "address": "Mánzili",
+        "delete_confirm": "Jetkerip beriwshini óshirip taslamaqshısız ba?"
+      }
+    },
+    "settings": {
+      "categories": "Kategoriyalar",
+      "units": "Ólshemler",
+      "warehouses": "Skladlar",
+      "empty": "Bos",
+      "delete": "Óshiriw",
+      "add": "+ Qosıw",
+      "prompts": {
+        "category_name": "Taza kategoriyanıń atamasın kiritiń:",
+        "unit_name": "Ólshem ataması (mısalı: Kilogramm):",
+        "unit_abbr": "Kod / Qısqartpa (mısalı: kg):",
+        "warehouse_name": "Sklad atamasın kiritiń (mısalı: Tiykarǵı sklad):",
+        "warehouse_loc": "Mánzili (májbúriy emes):"
+      }
+    }
+  },
+  "finance": {
+    "title": "Qarejetler",
+    "subtitle": "Dáramatlar, qárejetler hám tranzakciya kategoriyaların basqarıw",
+    "tabs": {
+      "transactions": "Tranzakciyalar",
+      "categories": "Kategoriyalar"
+    },
+    "transactions": {
+      "title": "Tranzakciyalar dizimi",
+      "new_tx": "Taza tranzakciya",
+      "not_found": "Tranzakciyalar tabılmadı",
+      "income": "Kiriw",
+      "expense": "Shıǵıw",
+      "no_category": "Kategoriyasız",
+      "methods": {
+        "cash": "Naq pul",
+        "card": "Karta",
+        "transfer": "Awdarma"
+      },
+      "table": {
+        "id": "ID",
+        "type": "Túri",
+        "category": "Kategoriya",
+        "amount": "Summa",
+        "date": "Sáne",
+        "employee": "Xızmetker",
+        "actions": "Háreketler"
+      },
+      "modal": {
+        "new_title": "Taza tranzakciya",
+        "edit_title": "Tranzakciyanı ózgertiw",
+        "amount": "Summa (UZS)",
+        "method": "Tólew usılı",
+        "category": "Kategoriya",
+        "desc": "Túsindiriw (májbúriy emes)",
+        "desc_placeholder": "Tólew maqseti...",
+        "cancel": "Biykarlaw",
+        "save": "Saqlaw",
+        "save_error": "Saqlawda qátelik",
+        "delete_confirm": "Usı tranzakciyanı óshirmekshisiz be?"
+      }
+    },
+    "categories": {
+      "title": "Tranzakciya kategoriyaları",
+      "new_cat": "Taza kategoriya",
+      "not_found": "Kategoriyalar tabılmadı",
+      "active": "Aktiv",
+      "inactive": "Aktiv emes",
+      "table": {
+        "id": "ID",
+        "name": "Ataması",
+        "status": "Status",
+        "actions": "Háreketler"
+      },
+      "modal": {
+        "new_title": "Taza kategoriya",
+        "edit_title": "Ózgertiw",
+        "name": "Kategoriya ataması",
+        "name_placeholder": "Ijara",
+        "is_active": "Kategoriya aktiv",
+        "cancel": "Biykarlaw",
+        "save": "Saqlaw",
+        "delete_confirm": "Kategoriyanı óshirmekshisiz be?"
+      }
+    }
+  },
+  "users": {
+    "title": "Xızmetkerler",
+    "subtitle": "Xızmetkerler hám olardıń rolin basqarıw",
+    "add_user": "Xızmetker qosıw",
+    "not_found": "Xızmetkerler tabılmadı",
+    "active": "Aktiv",
+    "inactive": "Aktiv emes",
+    "table": {
+      "id": "ID",
+      "employee": "Xızmetker",
+      "role": "Rol",
+      "status": "Status",
+      "actions": "Háreketler"
+    },
+    "modal": {
+      "new_title": "Taza xızmetker",
+      "edit_title": "Xızmetkerdi ózgertiw",
+      "first_name": "Atı",
+      "last_name": "Familiyası",
+      "phone": "Telefon",
+      "password": "Parol",
+      "password_hint": "(ózgertpeytuǵın bolsańız bos qaldırıń)",
+      "role": "Rol",
+      "select_role": "Roldi tańlań",
+      "is_active": "Aktiv (sistemaga kire aladı)",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "add": "Qosıw",
+      "save_error": "Saqlawda qátelik",
+      "password_required": "Taza xızmetker ushın parol májbúriy",
+      "delete_confirm": "Siz haqıyqattan da usı xızmetkerdi óshirmekshisiz be?"
+    }
+  },
+  "salaries": {
+    "title": "Xızmetkerler is haqı",
+    "subtitle": "Is haqın basqarıw hám esapqa alıw",
+    "add_salary": "Is haqı qosıw",
+    "not_found": "Maǵlıwmatlar tabılmadı",
+    "table": {
+      "id": "ID",
+      "employee": "Xızmetker",
+      "amount": "Summa",
+      "month_date": "Ay / Sáne",
+      "actions": "Háreketler"
+    },
+    "modal": {
+      "new_title": "Is haqı jazıw",
+      "edit_title": "Is haqın ózgertiw",
+      "employee": "Xızmetker",
+      "select_employee": "Xızmetkerdi tańlań",
+      "amount": "Summa",
+      "amount_placeholder": "Mısalı: 5000000",
+      "month": "Ay (Májbúriy emes)",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "add": "Qosıw",
+      "save_error": "Saqlawda qátelik",
+      "delete_confirm": "Siz haqıyqattan da usı is haqı maǵlıwmatın óshirmekshisiz be?"
+    }
+  },
+  "roles": {
+    "title": "Roller hám ruqsatlar",
+    "subtitle": "Administrator rolin hám olardıń huqıqların basqarıw",
+    "add_role": "Rol qosıw",
+    "not_found": "Roller tabılmadı",
+    "table": {
+      "id": "ID",
+      "name": "Ataması",
+      "code": "Kodi",
+      "actions": "Háreketler"
+    },
+    "modal": {
+      "new_title": "Taza rol",
+      "edit_title": "Roldi ózgertiw",
+      "name": "Ataması (Name)",
+      "name_placeholder": "Mısalı: Menejer",
+      "code": "Kodi (Code)",
+      "code_placeholder": "Mısalı: manager",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "add": "Qosıw",
+      "delete_confirm": "Siz haqıyqattan da usı roldi óshirmekshisiz be?"
+    }
+  },
+  "profile": {
+    "title": "Profil sazlawları",
+    "subtitle": "Óz jeke maǵlıwmatlarıńızdı hám qáwipsizlikti basqarıń",
+    "personal_data": {
+      "title": "Jeke maǵlıwmatlar",
+      "first_name": "Atı",
+      "last_name": "Familiyası",
+      "role": "Rol",
+      "save": "Ózgerislerdi saqlaw",
+      "success": "Profil tabıslı jańalandı!",
+      "error": "Profildi jańalawda qátelik"
+    },
+    "password": {
+      "title": "Paroldi ózgertiw",
+      "current": "Házirgi parol",
+      "new": "Taza parol",
+      "confirm": "Taza paroldi tastıyıqlań",
+      "update": "Paroldi jańalaw",
+      "success": "Parol tabıslı ózgertildi!",
+      "error": "Paroldi ózgertiwde qátelik",
+      "mismatch": "Taza parollar sáykes kelmeydi"
+    }
+  },
+  "sidebar": {
+    "products": "Menyu / Ónimler",
+    "orders": "Buyırtpalar",
+    "shifts": "Smenalar",
+    "warehouse": "Sklad",
+    "finance": "Qarejetler",
+    "users": "Xızmetkerler",
+    "salaries": "Is haqı",
+    "roles": "Roller",
+    "profile": "Profil"
+  },
+  "header": {
+    "logout": "Shıǵıw"
+  },
+  "login": {
+    "subtitle": "Basqarıw paneline kiriw",
+    "error": "Login yaki parol qáte",
+    "phone": "Telefon",
+    "password": "Parol",
+    "loading": "Júklenbekte...",
+    "submit": "Kiriw"
+  },
+  "common": {
+    "error": "Qátelik júz berdi",
+    "created": "Tabıslı qosıldı!",
+    "updated": "Tabıslı ózgertildi!",
+    "deleted": "Tabıslı óshirildi!",
+    "login_success": "Sistemaga tabıslı kirdińiz!"
+  }
+}

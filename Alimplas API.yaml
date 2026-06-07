@@ -1,0 +1,5237 @@
+openapi: 3.0.3
+info:
+  title: Alimplas API
+  version: 1.0.0
+  description: API Documentation
+  contact:
+    email: email@gmail.com
+  license:
+    name: BSD License
+paths:
+  /api/v1/admins/profile:
+    get:
+      operationId: admins_profile_retrieve
+      description: Tizimga kirgan admin o'z profilini ko'rishi.
+      summary: Admin profili
+      tags:
+      - Profil (Profile)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminGetMe'
+          description: ''
+    put:
+      operationId: admins_profile_update
+      tags:
+      - Profil (Profile)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminGetMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminGetMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminGetMe'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminGetMe'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: admins_profile_partial_update
+      description: Admin o'z profilidagi ba'zi maydonlarni yangilashi.
+      summary: Admin profilini qisman tahrirlash
+      tags:
+      - Profil (Profile)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminGetMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminGetMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminGetMe'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminGetMe'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/admins/roles:
+    get:
+      operationId: admins_roles_list
+      description: Tizimdagi barcha rollar ro'yxati.
+      summary: Rollar ro'yxati
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoleList'
+          description: ''
+    post:
+      operationId: admins_roles_create
+      description: Tizimga yangi rol qo'shadi.
+      summary: Yangi rol yaratish
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Role'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Role'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Role'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/admins/roles/{id}:
+    get:
+      operationId: admins_roles_retrieve
+      description: Bitta rolni to'liq ko'rish.
+      summary: Rolni ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Role'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: admins_roles_update
+      description: Rolni to'liq tahrirlash.
+      summary: Rolni o'zgartirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Role'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Role'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Role'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: admins_roles_partial_update
+      description: Rolni qisman tahrirlash.
+      summary: Rolni qisman o'zgartirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRole'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRole'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRole'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Role'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: admins_roles_destroy
+      description: Rolni tizimdan o'chirish.
+      summary: Rolni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Roles
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admins/user-salaries:
+    get:
+      operationId: admins_user_salaries_list
+      description: Barcha xodimlar uchun belgilangan oylik maoshlar.
+      summary: Maoshlar ro'yxati
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: month
+        schema:
+          type: string
+          format: date
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: user
+        schema:
+          type: integer
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserSalaryList'
+          description: ''
+    post:
+      operationId: admins_user_salaries_create
+      description: Xodim uchun yangi maosh belgilash.
+      summary: Yangi maosh belgilash
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserSalary'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/admins/user-salaries/{id}:
+    get:
+      operationId: admins_user_salaries_retrieve
+      description: Bitta maosh to'liq ma'lumoti.
+      summary: Maosh ma'lumotini ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserSalary'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: admins_user_salaries_update
+      description: Maosh ma'lumotini to'liq tahrirlash.
+      summary: Maoshni o'zgartirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserSalary'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserSalary'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: admins_user_salaries_partial_update
+      description: Maosh ma'lumotini qisman tahrirlash.
+      summary: Maoshni qisman o'zgartirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSalary'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSalary'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserSalary'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserSalary'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: admins_user_salaries_destroy
+      description: Maoshni tizimdan o'chirish.
+      summary: Maoshni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/admins/users:
+    get:
+      operationId: admins_users_list
+      description: Admin uchun barcha xodimlarni ko'rish.
+      summary: Xodimlar ro'yxati
+      parameters:
+      - in: query
+        name: created_from
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: created_to
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: first_name
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - in: query
+        name: last_name
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: array
+          items:
+            type: integer
+        explode: true
+        style: form
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAdminCreateList'
+          description: ''
+    post:
+      operationId: admins_users_create
+      description: Admin tomonidan yangi xodim qo'shish.
+      summary: Yangi xodim qo'shish
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminCreate'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/admins/users/{id}:
+    get:
+      operationId: admins_users_retrieve
+      description: Admin tomonidan bitta xodim ma'lumotlarini olish.
+      summary: Xodimni ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminCreate'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: admins_users_update
+      description: Admin tomonidan xodimni to'liq tahrirlash.
+      summary: Xodimni tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminCreate'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: admins_users_partial_update
+      description: Admin tomonidan xodimni qisman tahrirlash.
+      summary: Xodimni qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAdminCreate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/AdminCreate'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: admins_users_destroy
+      description: Admin tomonidan xodimni o'chirish.
+      summary: Xodimni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Users
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/change-password:
+    post:
+      operationId: change_password_create
+      description: Mavjud parolni tasdiqlab, yangi parol o'rnatish.
+      summary: Parolni almashtirish
+      tags:
+      - Profil (Profile)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/ChangePassword'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/finance/categories/:
+    get:
+      operationId: finance_categories_list
+      description: Barcha tranzaksiya kategoriyalari ro'yxati.
+      summary: Kategoriyalar ro'yxati
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransactionCategoryList'
+          description: ''
+    post:
+      operationId: finance_categories_create
+      description: Yangi tranzaksiya kategoriyasi yaratish.
+      summary: Yangi kategoriya
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/TransactionCategory'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/finance/categories/{id}/:
+    get:
+      operationId: finance_categories_retrieve
+      description: Bitta kategoriyani ID orqali ko'rish.
+      summary: Kategoriyani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/TransactionCategory'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: finance_categories_update
+      description: Kategoriyani to'liq o'zgartirish.
+      summary: Kategoriyani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TransactionCategory'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/TransactionCategory'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: finance_categories_partial_update
+      description: Kategoriyani qisman tahrirlash.
+      summary: Kategoriyani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransactionCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransactionCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransactionCategory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/TransactionCategory'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: finance_categories_destroy
+      description: Kategoriyani tizimdan o'chirish.
+      summary: Kategoriyani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/finance/transactions/:
+    get:
+      operationId: finance_transactions_list
+      description: Barcha kirim va chiqim operatsiyalari ro'yxati.
+      summary: Tranzaksiyalar ro'yxati
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: integer
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date-time
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: order
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: payment_method
+        schema:
+          type: string
+          enum:
+          - card
+          - cash
+          - online
+        description: |-
+          * `cash` - Naqd (Cash)
+          * `card` - Karta (Card)
+          * `online` - Online (Click/Payme)
+      - in: query
+        name: shift
+        schema:
+          type: integer
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - expense
+          - income
+        description: |-
+          * `income` - Kirim (Income)
+          * `expense` - Chiqim (Expense)
+      - in: query
+        name: user
+        schema:
+          type: integer
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTransactionList'
+          description: ''
+    post:
+      operationId: finance_transactions_create
+      description: Kirim yoki chiqim qilish.
+      summary: Yangi tranzaksiya qo'shish
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/finance/transactions/{id}/:
+    get:
+      operationId: finance_transactions_retrieve
+      description: Bitta pul o'tkazmasini to'liq ko'rish.
+      summary: Tranzaksiyani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: finance_transactions_update
+      description: Pul o'tkazmasini to'liq tahrirlash.
+      summary: Tranzaksiyani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: finance_transactions_partial_update
+      description: Pul o'tkazmasini qisman tahrirlash.
+      summary: Tranzaksiyani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTransaction'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: finance_transactions_destroy
+      description: Pul o'tkazmasini bekor qilish/o'chirish.
+      summary: Tranzaksiyani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Moliya (Finance)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/login:
+    post:
+      operationId: login_create
+      description: Telefon raqam va parol orqali tizimga kirish va JWT token olish.
+      summary: Tizimga kirish (Login)
+      tags:
+      - Autentifikatsiya (Auth)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Login'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Login'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/order/orders/:
+    get:
+      operationId: order_orders_list
+      description: Barcha buyurtmalarni ro'yxatdan o'tkazish va filtrlar orqali ko'rish.
+      summary: Buyurtmalar ro'yxati
+      parameters:
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: is_paid
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: payment_type
+        schema:
+          type: string
+          enum:
+          - card
+          - cash
+          - online
+        description: |-
+          * `cash` - Cash
+          * `card` - Card
+          * `online` - Online
+      - in: query
+        name: phone
+        schema:
+          type: string
+      - in: query
+        name: shift
+        schema:
+          type: integer
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - pending
+        description: |-
+          * `pending` - Pending
+          * `completed` - Completed
+          * `cancelled` - Cancelled
+      - in: query
+        name: user
+        schema:
+          type: integer
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrderReadList'
+          description: ''
+    post:
+      operationId: order_orders_create
+      description: Yangi buyurtmani shakllantirish.
+      summary: Yangi buyurtma (Kassa)
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/OrderCreateUpdate'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/order/orders/{id}/:
+    get:
+      operationId: order_orders_retrieve
+      description: Bitta buyurtmaning to'liq ma'lumoti va unga kiruvchi maxsulotlar.
+      summary: Buyurtmani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/OrderRead'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: order_orders_update
+      description: Buyurtmani to'liq qayta tahrirlash.
+      summary: Buyurtmani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderCreateUpdate'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/OrderCreateUpdate'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: order_orders_partial_update
+      description: Buyurtmaning ba'zi parametrlarini (holatini) tahrirlash.
+      summary: Buyurtmani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderCreateUpdate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderCreateUpdate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderCreateUpdate'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/OrderCreateUpdate'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: order_orders_destroy
+      description: Buyurtmani bekor qilish.
+      summary: Buyurtmani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/order/products/:
+    get:
+      operationId: order_products_list
+      description: Barcha mahsulotlarni ko'rish va izlash.
+      summary: Mahsulotlar ro'yxati
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProductList'
+          description: ''
+    post:
+      operationId: order_products_create
+      description: Menyuga yangi mahsulot qo'shish.
+      summary: Yangi mahsulot
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/order/products/{id}/:
+    get:
+      operationId: order_products_retrieve
+      description: Bitta mahsulot haqida to'liq ma'lumot.
+      summary: Mahsulotni ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: order_products_update
+      description: Mahsulot ma'lumotlarini to'liq tahrirlash.
+      summary: Mahsulotni tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Product'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Product'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: order_products_partial_update
+      description: Mahsulotning ba'zi qismlarini o'zgartirish.
+      summary: Mahsulotni qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProduct'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Product'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: order_products_destroy
+      description: Mahsulotni menyudan o'chirish.
+      summary: Mahsulotni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Buyurtmalar (Orders)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/profile:
+    get:
+      operationId: profile_retrieve
+      description: Tizimga kirgan xodim (ofitsiant) o'z ma'lumotlarini ko'rishi.
+      summary: Mening profilim
+      tags:
+      - Profil (Profile)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGetMe'
+          description: ''
+    put:
+      operationId: profile_update
+      description: |-
+        Oddiy xodimlar (ofitsiant, kassa) uchun o'z profillarini
+        boshqarish (ko'rish va tahrirlash) imkonini beruvchi API.
+      tags:
+      - Profil (Profile)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserGetMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserGetMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserGetMe'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserGetMe'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: profile_partial_update
+      description: |-
+        Oddiy xodimlar (ofitsiant, kassa) uchun o'z profillarini
+        boshqarish (ko'rish va tahrirlash) imkonini beruvchi API.
+      tags:
+      - Profil (Profile)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserGetMe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserGetMe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserGetMe'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/UserGetMe'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - 5. Auth & Accounts (Tizimga kirish va Profillar)
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/shifts/:
+    get:
+      operationId: shifts_list
+      description: Tizimdagi barcha smenalar ro'yxati.
+      summary: Smenalar ro'yxati
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: type
+        schema:
+          type: integer
+      tags:
+      - Shifts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedShiftList'
+          description: ''
+    post:
+      operationId: shifts_create
+      description: Yangi smena ochish.
+      summary: Yangi smena yaratish
+      tags:
+      - Shifts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shift'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Shift'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/shifts/{id}/:
+    get:
+      operationId: shifts_retrieve
+      description: Bitta smena bo'yicha to'liq ma'lumot.
+      summary: Smenani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Shifts
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Shift'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: shifts_update
+      description: Smenani to'liq tahrirlash.
+      summary: Smenani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Shifts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Shift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Shift'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Shift'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: shifts_partial_update
+      description: Smenani qisman tahrirlash (yopish).
+      summary: Smenani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Shifts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShift'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Shift'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: shifts_destroy
+      description: Smenani tizimdan o'chirish.
+      summary: Smenani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Shifts
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/warehouse/categories/:
+    get:
+      operationId: warehouse_categories_list
+      description: Kategoriyalar (masalan, Go'sht, Sabzavotlar).
+      summary: Xomashyo kategoriyalari
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+    post:
+      operationId: warehouse_categories_create
+      description: Yangi kategoriya yaratish.
+      summary: Yangi kategoriya
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/categories/{id}/:
+    get:
+      operationId: warehouse_categories_retrieve
+      description: Bitta xomashyo kategoriyasini ko'rish.
+      summary: Kategoriyani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_categories_update
+      description: Kategoriyani to'liq tahrirlash.
+      summary: Kategoriyani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Category'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Category'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_categories_partial_update
+      description: Kategoriyani qisman tahrirlash.
+      summary: Kategoriyani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: warehouse_categories_destroy
+      description: Kategoriyani tizimdan o'chirish.
+      summary: Kategoriyani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/warehouse/inventory/:
+    get:
+      operationId: warehouse_inventory_list
+      description: Qaysi omborda qaysi xomashyodan qancha borligini ko'rsatuvchi ro'yxat.
+      summary: Sklad qoldiqlari ro'yxati
+      parameters:
+      - in: query
+        name: is_low_stock
+        schema:
+          type: boolean
+      - in: query
+        name: item
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: warehouse
+        schema:
+          type: integer
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInventoryList'
+          description: ''
+  /api/v1/warehouse/inventory/{id}/:
+    get:
+      operationId: warehouse_inventory_retrieve
+      description: Bitta pozitsiyani ombordagi qoldiq ma'lumoti.
+      summary: Ombor qoldig'ini ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Inventory'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_inventory_update
+      description: Minimal chegara kabi ba'zi holatlarni o'zgartirish.
+      summary: Qoldiq parametrini tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Inventory'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_inventory_partial_update
+      description: Minimal chegara kabi ba'zi holatlarni qisman o'zgartirish.
+      summary: Qoldiq parametrini qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInventory'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInventory'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInventory'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Inventory'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/items/:
+    get:
+      operationId: warehouse_items_list
+      description: Barcha turdagi xomashyolarni (mol) ko'rish.
+      summary: Xomashyolar (Item) ro'yxati
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: sku
+        schema:
+          type: string
+      - in: query
+        name: supplier
+        schema:
+          type: integer
+      - in: query
+        name: unit
+        schema:
+          type: integer
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedInventoryItemList'
+          description: ''
+    post:
+      operationId: warehouse_items_create
+      description: Tizimga yangi turdagi maxsulot / xomashyo kiritish.
+      summary: Yangi xomashyo yaratish
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/InventoryItem'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/items/{id}/:
+    get:
+      operationId: warehouse_items_retrieve
+      description: Bitta xomashyo bo'yicha to'liq ma'lumot.
+      summary: Xomashyoni ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/InventoryItem'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_items_update
+      description: Xomashyoni to'liq o'zgartirish.
+      summary: Xomashyoni tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/InventoryItem'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_items_partial_update
+      description: Xomashyoni qisman o'zgartirish.
+      summary: Xomashyoni qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInventoryItem'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInventoryItem'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInventoryItem'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/InventoryItem'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: warehouse_items_destroy
+      description: Xomashyoni o'chirish.
+      summary: Xomashyoni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/warehouse/movements/:
+    get:
+      operationId: warehouse_movements_list
+      description: Sklad harakatlarining (qabul, qaytarish, brak va hokazo) to'liq
+        tarixi.
+      summary: Ombor amallari (Kirim-Chiqim) ro'yxati
+      parameters:
+      - in: query
+        name: end_date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: item
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: movement_type
+        schema:
+          type: string
+          title: Тип движения
+          enum:
+          - in
+          - out
+          - transfer
+        description: |-
+          * `in` - Поступление (Kirim)
+          * `out` - Списание (Chiqim)
+          * `transfer` - Перемещение (Filialga yuborish)
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: start_date
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: user
+        schema:
+          type: integer
+      - in: query
+        name: warehouse
+        schema:
+          type: integer
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockMovementList'
+          description: ''
+    post:
+      operationId: warehouse_movements_create
+      description: Kirim (IN), Chiqim (OUT) yoki Ko'chirish (TRANSFER) amalini kiritish.
+      summary: Yangi amal bajarish
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockMovement'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StockMovement'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StockMovement'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/StockMovement'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/movements/{id}/:
+    get:
+      operationId: warehouse_movements_retrieve
+      description: Bitta kirim-chiqim harakati haqida ma'lumot (ID orqali).
+      summary: Ombor amalini ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/StockMovement'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/suppliers/:
+    get:
+      operationId: warehouse_suppliers_list
+      description: Barcha mahsulot yetkazib beruvchilarni ko'rish.
+      summary: Taminotchilar ro'yxati
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupplierList'
+          description: ''
+    post:
+      operationId: warehouse_suppliers_create
+      description: Yangi yetkazib beruvchini tizimga kiritish.
+      summary: Yangi taminotchi
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Supplier'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/suppliers/{id}/:
+    get:
+      operationId: warehouse_suppliers_retrieve
+      description: Bitta yetkazib beruvchi haqida to'liq axborot.
+      summary: Ta'minotchini ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Supplier'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_suppliers_update
+      description: Ta'minotchi axborotini to'liq o'zgartirish.
+      summary: Ta'minotchini tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Supplier'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_suppliers_partial_update
+      description: Ta'minotchini qisman o'zgartirish.
+      summary: Ta'minotchini qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSupplier'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Supplier'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: warehouse_suppliers_destroy
+      description: Ta'minotchini tizimdan o'chirish.
+      summary: Ta'minotchini o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/warehouse/units/:
+    get:
+      operationId: warehouse_units_list
+      description: O'lchov birliklari ro'yxati (kg, litr, dona).
+      summary: O'lchov birliklari
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUnitList'
+          description: ''
+    post:
+      operationId: warehouse_units_create
+      description: Yangi o'lchov birligini qo'shish.
+      summary: Yangi o'lchov birligi
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Unit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Unit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Unit'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/units/{id}/:
+    get:
+      operationId: warehouse_units_retrieve
+      description: Bitta o'lchov birligini ko'rish.
+      summary: Birlikni ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Unit'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_units_update
+      description: O'lchov birligini tahrirlash.
+      summary: Birlikni tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Unit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Unit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Unit'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_units_partial_update
+      description: O'lchov birligini qisman tahrirlash.
+      summary: Birlikni qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUnit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUnit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUnit'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Unit'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: warehouse_units_destroy
+      description: O'lchov birligini tizimdan o'chirish.
+      summary: Birlikni o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/warehouse/warehouses/:
+    get:
+      operationId: warehouse_warehouses_list
+      description: Tizimdagi barcha omborxonalarni (sklad) ko'rish.
+      summary: Omborxonalar ro'yxati
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWarehouseList'
+          description: ''
+    post:
+      operationId: warehouse_warehouses_create
+      description: Yangi omborxona yaratish.
+      summary: Yangi omborxona
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Warehouse'
+                required:
+                - message
+                - data
+          description: ''
+  /api/v1/warehouse/warehouses/{id}/:
+    get:
+      operationId: warehouse_warehouses_retrieve
+      description: ID orqali ma'lum omborxona haqida ma'lumot.
+      summary: Omborxonani ko'rish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Warehouse'
+                required:
+                - message
+                - data
+          description: ''
+    put:
+      operationId: warehouse_warehouses_update
+      description: Omborxonani to'liq tahrirlash.
+      summary: Omborxonani tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Warehouse'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Warehouse'
+                required:
+                - message
+                - data
+          description: ''
+    patch:
+      operationId: warehouse_warehouses_partial_update
+      description: Omborxonani qisman tahrirlash.
+      summary: Omborxonani qisman tahrirlash
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWarehouse'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Successfully
+                  data:
+                    $ref: '#/components/schemas/Warehouse'
+                required:
+                - message
+                - data
+          description: ''
+    delete:
+      operationId: warehouse_warehouses_destroy
+      description: Omborxonani tizimdan o'chirish.
+      summary: Omborxonani o'chirish
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Omborxona (Warehouse)
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    AdminCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        role_id:
+          type: integer
+          writeOnly: true
+        phone:
+          type: string
+          maxLength: 15
+        password:
+          type: string
+          writeOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+          title: Oxirgi kirish
+      required:
+      - created_at
+      - first_name
+      - id
+      - last_name
+      - password
+      - phone
+      - role
+      - role_id
+      - updated_at
+    AdminGetMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Oxirgi kirish
+        is_staff:
+          type: boolean
+          readOnly: true
+        is_superuser:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - is_staff
+      - is_superuser
+      - last_login
+      - last_name
+      - phone
+      - role
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+      required:
+      - created_at
+      - id
+      - name
+    ChangePassword:
+      type: object
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+      required:
+      - new_password
+      - old_password
+    Inventory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_details:
+          allOf:
+          - $ref: '#/components/schemas/InventoryItem'
+          readOnly: true
+        warehouse_details:
+          allOf:
+          - $ref: '#/components/schemas/Warehouse'
+          readOnly: true
+        is_low_stock:
+          type: boolean
+          readOnly: true
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Количество
+        minimum_stock:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Минимальный остаток
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Последнее обновление
+        item:
+          type: integer
+          title: Товар
+        warehouse:
+          type: integer
+          title: Склад
+      required:
+      - id
+      - is_low_stock
+      - item
+      - item_details
+      - last_updated
+      - warehouse
+      - warehouse_details
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unit_details:
+          allOf:
+          - $ref: '#/components/schemas/Unit'
+          readOnly: true
+        supplier_details:
+          allOf:
+          - $ref: '#/components/schemas/Supplier'
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 150
+        sku:
+          type: string
+          nullable: true
+          title: Артикул
+          maxLength: 50
+        description:
+          type: string
+          title: Описание
+        purchase_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Закупочная цена
+        is_active:
+          type: boolean
+          title: Активный
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата обновления
+        unit:
+          type: integer
+          title: Единица измерения
+        supplier:
+          type: integer
+          nullable: true
+          title: Поставщик
+      required:
+      - created_at
+      - id
+      - name
+      - supplier_details
+      - unit
+      - unit_details
+      - updated_at
+    Login:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        phone:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - id
+      - password
+      - phone
+    MovementTypeEnum:
+      enum:
+      - in
+      - out
+      - transfer
+      type: string
+      description: |-
+        * `in` - Поступление (Kirim)
+        * `out` - Списание (Chiqim)
+        * `transfer` - Перемещение (Filialga yuborish)
+    OrderCreateUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        shift:
+          type: integer
+          readOnly: true
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        is_paid:
+          type: boolean
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemCreate'
+          writeOnly: true
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+      required:
+      - id
+      - items
+      - payment_type
+      - phone
+      - shift
+      - status
+      - total_amount
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        product:
+          type: integer
+        product_details:
+          allOf:
+          - $ref: '#/components/schemas/Product'
+          readOnly: true
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        raw_data:
+          nullable: true
+      required:
+      - id
+      - price
+      - product
+      - product_details
+      - total_price
+    OrderItemCreate:
+      type: object
+      properties:
+        product:
+          type: integer
+        quantity:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        raw_data:
+          nullable: true
+      required:
+      - product
+    OrderRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        shift:
+          type: integer
+          nullable: true
+        user:
+          type: integer
+          nullable: true
+        user_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 20
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        is_paid:
+          type: boolean
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - items
+      - payment_type
+      - phone
+      - status
+      - total_amount
+      - updated_at
+      - user_details
+    PaginatedAdminCreateList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminCreate'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedCategoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedInventoryItemList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryItem'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedInventoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedOrderReadList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderRead'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedProductList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedRoleList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedShiftList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shift'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedStockMovementList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedSupplierList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedTransactionCategoryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionCategory'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedTransactionList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedUnitList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Unit'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedUserSalaryList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSalary'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PaginatedWarehouseList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warehouse'
+        pagination:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 123
+            next:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=4
+            previous:
+              type: string
+              nullable: true
+              format: uri
+              example: http://api.example.org/accounts/?page=2
+          required:
+          - count
+      required:
+      - data
+      - pagination
+    PatchedAdminCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        role_id:
+          type: integer
+          writeOnly: true
+        phone:
+          type: string
+          maxLength: 15
+        password:
+          type: string
+          writeOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+          title: Oxirgi kirish
+    PatchedAdminGetMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+          title: Oxirgi kirish
+        is_staff:
+          type: boolean
+          readOnly: true
+        is_superuser:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+    PatchedInventory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_details:
+          allOf:
+          - $ref: '#/components/schemas/InventoryItem'
+          readOnly: true
+        warehouse_details:
+          allOf:
+          - $ref: '#/components/schemas/Warehouse'
+          readOnly: true
+        is_low_stock:
+          type: boolean
+          readOnly: true
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Количество
+        minimum_stock:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Минимальный остаток
+        last_updated:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Последнее обновление
+        item:
+          type: integer
+          title: Товар
+        warehouse:
+          type: integer
+          title: Склад
+    PatchedInventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unit_details:
+          allOf:
+          - $ref: '#/components/schemas/Unit'
+          readOnly: true
+        supplier_details:
+          allOf:
+          - $ref: '#/components/schemas/Supplier'
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 150
+        sku:
+          type: string
+          nullable: true
+          title: Артикул
+          maxLength: 50
+        description:
+          type: string
+          title: Описание
+        purchase_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Закупочная цена
+        is_active:
+          type: boolean
+          title: Активный
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата обновления
+        unit:
+          type: integer
+          title: Единица измерения
+        supplier:
+          type: integer
+          nullable: true
+          title: Поставщик
+    PatchedOrderCreateUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        shift:
+          type: integer
+          readOnly: true
+          nullable: true
+        phone:
+          type: string
+          maxLength: 20
+        is_paid:
+          type: boolean
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemCreate'
+          writeOnly: true
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+    PatchedProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 50
+    PatchedShift:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedSupplier:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 150
+        contact_person:
+          type: string
+          title: Контактное лицо
+          maxLength: 100
+        phone:
+          type: string
+          title: Телефон
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          title: Elektron pochta
+          maxLength: 254
+        address:
+          type: string
+          title: Адрес
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+    PatchedTransaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        category:
+          type: integer
+          nullable: true
+        category_details:
+          allOf:
+          - $ref: '#/components/schemas/TransactionCategory'
+          readOnly: true
+        description:
+          type: string
+          nullable: true
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+        user_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        order:
+          type: integer
+          nullable: true
+        shift:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedTransactionCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUnit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 50
+        abbreviation:
+          type: string
+          title: Аббревиатура
+          maxLength: 10
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+    PatchedUserGetMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUserSalary:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        user_id:
+          type: integer
+          writeOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        month:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedWarehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - card
+      - online
+      type: string
+      description: |-
+        * `cash` - Naqd (Cash)
+        * `card` - Karta (Card)
+        * `online` - Online (Click/Payme)
+    PaymentTypeEnum:
+      enum:
+      - cash
+      - card
+      - online
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `card` - Card
+        * `online` - Online
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        image:
+          type: string
+          format: uri
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - price
+      - updated_at
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - code
+      - id
+      - name
+    Shift:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        start_time:
+          type: string
+          format: date-time
+          readOnly: true
+        end_time:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - end_time
+      - id
+      - start_time
+      - type
+      - updated_at
+    StatusEnum:
+      enum:
+      - pending
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        item_details:
+          allOf:
+          - $ref: '#/components/schemas/InventoryItem'
+          readOnly: true
+        warehouse_details:
+          allOf:
+          - $ref: '#/components/schemas/Warehouse'
+          readOnly: true
+        destination_warehouse_details:
+          allOf:
+          - $ref: '#/components/schemas/Warehouse'
+          readOnly: true
+        quantity:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          title: Количество
+        movement_type:
+          allOf:
+          - $ref: '#/components/schemas/MovementTypeEnum'
+          title: Тип движения
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата
+        notes:
+          type: string
+          title: Примечания
+        item:
+          type: integer
+          title: Товар
+        warehouse:
+          type: integer
+          title: Склад
+        destination_warehouse:
+          type: integer
+          nullable: true
+          title: Склад назначения (Filial)
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+          title: Пользователь
+      required:
+      - date
+      - destination_warehouse_details
+      - id
+      - item
+      - item_details
+      - movement_type
+      - quantity
+      - user
+      - warehouse
+      - warehouse_details
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 150
+        contact_person:
+          type: string
+          title: Контактное лицо
+          maxLength: 100
+        phone:
+          type: string
+          title: Телефон
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          title: Elektron pochta
+          maxLength: 254
+        address:
+          type: string
+          title: Адрес
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+      required:
+      - created_at
+      - id
+      - name
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        category:
+          type: integer
+          nullable: true
+        category_details:
+          allOf:
+          - $ref: '#/components/schemas/TransactionCategory'
+          readOnly: true
+        description:
+          type: string
+          nullable: true
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+        user_details:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        order:
+          type: integer
+          nullable: true
+        shift:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - category_details
+      - date
+      - id
+      - payment_method
+      - type
+      - user
+      - user_details
+    TransactionCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+    TypeEnum:
+      enum:
+      - income
+      - expense
+      type: string
+      description: |-
+        * `income` - Kirim (Income)
+        * `expense` - Chiqim (Expense)
+    Unit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 50
+        abbreviation:
+          type: string
+          title: Аббревиатура
+          maxLength: 10
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+      required:
+      - abbreviation
+      - created_at
+      - id
+      - name
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        phone:
+          type: string
+          maxLength: 15
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+      required:
+      - created_at
+      - first_name
+      - id
+      - last_name
+      - phone
+      - role
+    UserGetMe:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/Role'
+          readOnly: true
+        phone:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_name
+      - phone
+      - role
+    UserSalary:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        user_id:
+          type: integer
+          writeOnly: true
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        month:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - user
+      - user_id
+    Warehouse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата создания
+      required:
+      - created_at
+      - id
+      - name
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,18 +1,22 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { useTranslation } from 'react-i18next'
+import { Toaster } from 'react-hot-toast'
 import { 
-  LayoutDashboard, 
   Package, 
-  ArrowDownLeft, 
-  ArrowUpRight, 
-  Send, 
-  History,
   Menu,
   ChevronRight,
-  ShoppingCart,
-  Users
+  Users,
+  UserCircle,
+  Shield,
+  Banknote,
+  Wallet,
+  ShoppingBag,
+  PackageSearch,
+  CalendarClock,
+  LogOut
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -25,20 +29,36 @@ export const Route = createRootRoute({
 })
 
 function RootLayout() {
+  const { t } = useTranslation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token && location.pathname !== '/login') {
+      navigate({ to: '/login', replace: true })
+    }
+  }, [location.pathname, navigate])
+
+  if (location.pathname === '/login') {
+    return <Outlet />
+  }
 
   const navItems = [
-    { label: 'Dashboard', to: '/', icon: LayoutDashboard },
-    { label: 'Sklad', to: '/inventory', icon: Package },
-    { label: 'Kiris', to: '/incoming', icon: ArrowDownLeft },
-    { label: 'Shıǵıs', to: '/outgoing', icon: ArrowUpRight },
-    { label: '3 filial', to: '/aziz', icon: Send },
-    { label: 'Satıw', to: '/sales', icon: ShoppingCart },
-    { label: 'Xızmetkerler', to: '/employees', icon: Users },
+    { label: t('sidebar.products'), to: '/products', icon: PackageSearch },
+    { label: t('sidebar.orders'), to: '/orders', icon: ShoppingBag },
+    { label: t('sidebar.shifts'), to: '/shifts', icon: CalendarClock },
+    { label: t('sidebar.warehouse'), to: '/warehouse', icon: Package },
+    { label: t('sidebar.finance'), to: '/finance', icon: Wallet },
+    { label: t('sidebar.users'), to: '/admins/users', icon: Users },
+    { label: t('sidebar.salaries'), to: '/admins/user-salaries', icon: Banknote },
+    { label: t('sidebar.roles'), to: '/admins/roles', icon: Shield },
+    { label: t('sidebar.profile'), to: '/admins/profile', icon: UserCircle },
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="h-screen overflow-hidden bg-slate-50 flex">
       {/* Decorative Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-primary-200/20 blur-[120px] rounded-full animate-float" />
@@ -46,7 +66,6 @@ function RootLayout() {
       </div>
 
       {/* Sidebar */}
-
       <aside 
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-72 bg-secondary-900 text-white transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
@@ -69,7 +88,7 @@ function RootLayout() {
             </button>
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.to}
@@ -92,26 +111,26 @@ function RootLayout() {
               </Link>
             ))}
           </nav>
-
-          <div className={cn("p-6 border-t border-secondary-800", !isSidebarOpen && "lg:hidden")}>
-            <div className="bg-secondary-800 rounded-2xl p-4">
-              <p className="text-xs text-secondary-400 uppercase tracking-wider font-bold mb-1">Admin Panel</p>
-              <p className="text-sm font-medium">Warehouse Manager</p>
-            </div>
-          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-40">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex-shrink-0 flex items-center justify-between z-40">
           <h2 className="text-xl font-display font-bold text-slate-800">
-            {/* Dynamic Title based on route can be added here */}
-            Overview
+            {/* Overview */}
           </h2>
           <div className="flex items-center gap-4">
-            <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
-              <History className="w-6 h-6" />
+            <button 
+              onClick={() => {
+                localStorage.removeItem('token')
+                localStorage.removeItem('auth')
+                navigate({ to: '/login', replace: true })
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              {t('header.logout')}
             </button>
             <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden">
               <img src="https://ui-avatars.com/api/?name=Admin&background=f97316&color=fff" alt="Avatar" />
@@ -125,6 +144,7 @@ function RootLayout() {
       </main>
 
       <TanStackRouterDevtools />
+      <Toaster position="top-right" />
     </div>
   )
 }

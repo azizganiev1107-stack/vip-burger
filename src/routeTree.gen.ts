@@ -9,32 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SalesRouteImport } from './routes/sales'
-import { Route as OutgoingRouteImport } from './routes/outgoing'
-import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as IncomingRouteImport } from './routes/incoming'
+import { Route as WarehouseRouteImport } from './routes/warehouse'
+import { Route as ShiftsRouteImport } from './routes/shifts'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as OrdersRouteImport } from './routes/orders'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as EmployeesRouteImport } from './routes/employees'
-import { Route as AzizRouteImport } from './routes/aziz'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminsUsersRouteImport } from './routes/admins.users'
+import { Route as AdminsUserSalariesRouteImport } from './routes/admins.user-salaries'
+import { Route as AdminsRolesRouteImport } from './routes/admins.roles'
+import { Route as AdminsProfileRouteImport } from './routes/admins.profile'
 
-const SalesRoute = SalesRouteImport.update({
-  id: '/sales',
-  path: '/sales',
+const WarehouseRoute = WarehouseRouteImport.update({
+  id: '/warehouse',
+  path: '/warehouse',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OutgoingRoute = OutgoingRouteImport.update({
-  id: '/outgoing',
-  path: '/outgoing',
+const ShiftsRoute = ShiftsRouteImport.update({
+  id: '/shifts',
+  path: '/shifts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InventoryRoute = InventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IncomingRoute = IncomingRouteImport.update({
-  id: '/incoming',
-  path: '/incoming',
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmployeesRoute = EmployeesRouteImport.update({
@@ -42,113 +56,165 @@ const EmployeesRoute = EmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AzizRoute = AzizRouteImport.update({
-  id: '/aziz',
-  path: '/aziz',
+const AdminsUsersRoute = AdminsUsersRouteImport.update({
+  id: '/admins/users',
+  path: '/admins/users',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminsUserSalariesRoute = AdminsUserSalariesRouteImport.update({
+  id: '/admins/user-salaries',
+  path: '/admins/user-salaries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminsRolesRoute = AdminsRolesRouteImport.update({
+  id: '/admins/roles',
+  path: '/admins/roles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminsProfileRoute = AdminsProfileRouteImport.update({
+  id: '/admins/profile',
+  path: '/admins/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/aziz': typeof AzizRoute
   '/employees': typeof EmployeesRoute
-  '/incoming': typeof IncomingRoute
-  '/inventory': typeof InventoryRoute
-  '/outgoing': typeof OutgoingRoute
-  '/sales': typeof SalesRoute
+  '/finance': typeof FinanceRoute
+  '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
+  '/products': typeof ProductsRoute
+  '/shifts': typeof ShiftsRoute
+  '/warehouse': typeof WarehouseRoute
+  '/admins/profile': typeof AdminsProfileRoute
+  '/admins/roles': typeof AdminsRolesRoute
+  '/admins/user-salaries': typeof AdminsUserSalariesRoute
+  '/admins/users': typeof AdminsUsersRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/aziz': typeof AzizRoute
   '/employees': typeof EmployeesRoute
-  '/incoming': typeof IncomingRoute
-  '/inventory': typeof InventoryRoute
-  '/outgoing': typeof OutgoingRoute
-  '/sales': typeof SalesRoute
+  '/finance': typeof FinanceRoute
+  '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
+  '/products': typeof ProductsRoute
+  '/shifts': typeof ShiftsRoute
+  '/warehouse': typeof WarehouseRoute
+  '/admins/profile': typeof AdminsProfileRoute
+  '/admins/roles': typeof AdminsRolesRoute
+  '/admins/user-salaries': typeof AdminsUserSalariesRoute
+  '/admins/users': typeof AdminsUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/aziz': typeof AzizRoute
   '/employees': typeof EmployeesRoute
-  '/incoming': typeof IncomingRoute
-  '/inventory': typeof InventoryRoute
-  '/outgoing': typeof OutgoingRoute
-  '/sales': typeof SalesRoute
+  '/finance': typeof FinanceRoute
+  '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
+  '/products': typeof ProductsRoute
+  '/shifts': typeof ShiftsRoute
+  '/warehouse': typeof WarehouseRoute
+  '/admins/profile': typeof AdminsProfileRoute
+  '/admins/roles': typeof AdminsRolesRoute
+  '/admins/user-salaries': typeof AdminsUserSalariesRoute
+  '/admins/users': typeof AdminsUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/aziz'
     | '/employees'
-    | '/incoming'
-    | '/inventory'
-    | '/outgoing'
-    | '/sales'
+    | '/finance'
+    | '/login'
+    | '/orders'
+    | '/products'
+    | '/shifts'
+    | '/warehouse'
+    | '/admins/profile'
+    | '/admins/roles'
+    | '/admins/user-salaries'
+    | '/admins/users'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/aziz'
     | '/employees'
-    | '/incoming'
-    | '/inventory'
-    | '/outgoing'
-    | '/sales'
+    | '/finance'
+    | '/login'
+    | '/orders'
+    | '/products'
+    | '/shifts'
+    | '/warehouse'
+    | '/admins/profile'
+    | '/admins/roles'
+    | '/admins/user-salaries'
+    | '/admins/users'
   id:
     | '__root__'
-    | '/'
-    | '/aziz'
     | '/employees'
-    | '/incoming'
-    | '/inventory'
-    | '/outgoing'
-    | '/sales'
+    | '/finance'
+    | '/login'
+    | '/orders'
+    | '/products'
+    | '/shifts'
+    | '/warehouse'
+    | '/admins/profile'
+    | '/admins/roles'
+    | '/admins/user-salaries'
+    | '/admins/users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AzizRoute: typeof AzizRoute
   EmployeesRoute: typeof EmployeesRoute
-  IncomingRoute: typeof IncomingRoute
-  InventoryRoute: typeof InventoryRoute
-  OutgoingRoute: typeof OutgoingRoute
-  SalesRoute: typeof SalesRoute
+  FinanceRoute: typeof FinanceRoute
+  LoginRoute: typeof LoginRoute
+  OrdersRoute: typeof OrdersRoute
+  ProductsRoute: typeof ProductsRoute
+  ShiftsRoute: typeof ShiftsRoute
+  WarehouseRoute: typeof WarehouseRoute
+  AdminsProfileRoute: typeof AdminsProfileRoute
+  AdminsRolesRoute: typeof AdminsRolesRoute
+  AdminsUserSalariesRoute: typeof AdminsUserSalariesRoute
+  AdminsUsersRoute: typeof AdminsUsersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sales': {
-      id: '/sales'
-      path: '/sales'
-      fullPath: '/sales'
-      preLoaderRoute: typeof SalesRouteImport
+    '/warehouse': {
+      id: '/warehouse'
+      path: '/warehouse'
+      fullPath: '/warehouse'
+      preLoaderRoute: typeof WarehouseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/outgoing': {
-      id: '/outgoing'
-      path: '/outgoing'
-      fullPath: '/outgoing'
-      preLoaderRoute: typeof OutgoingRouteImport
+    '/shifts': {
+      id: '/shifts'
+      path: '/shifts'
+      fullPath: '/shifts'
+      preLoaderRoute: typeof ShiftsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/inventory': {
-      id: '/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/incoming': {
-      id: '/incoming'
-      path: '/incoming'
-      fullPath: '/incoming'
-      preLoaderRoute: typeof IncomingRouteImport
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/employees': {
@@ -158,31 +224,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/aziz': {
-      id: '/aziz'
-      path: '/aziz'
-      fullPath: '/aziz'
-      preLoaderRoute: typeof AzizRouteImport
+    '/admins/users': {
+      id: '/admins/users'
+      path: '/admins/users'
+      fullPath: '/admins/users'
+      preLoaderRoute: typeof AdminsUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admins/user-salaries': {
+      id: '/admins/user-salaries'
+      path: '/admins/user-salaries'
+      fullPath: '/admins/user-salaries'
+      preLoaderRoute: typeof AdminsUserSalariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admins/roles': {
+      id: '/admins/roles'
+      path: '/admins/roles'
+      fullPath: '/admins/roles'
+      preLoaderRoute: typeof AdminsRolesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admins/profile': {
+      id: '/admins/profile'
+      path: '/admins/profile'
+      fullPath: '/admins/profile'
+      preLoaderRoute: typeof AdminsProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AzizRoute: AzizRoute,
   EmployeesRoute: EmployeesRoute,
-  IncomingRoute: IncomingRoute,
-  InventoryRoute: InventoryRoute,
-  OutgoingRoute: OutgoingRoute,
-  SalesRoute: SalesRoute,
+  FinanceRoute: FinanceRoute,
+  LoginRoute: LoginRoute,
+  OrdersRoute: OrdersRoute,
+  ProductsRoute: ProductsRoute,
+  ShiftsRoute: ShiftsRoute,
+  WarehouseRoute: WarehouseRoute,
+  AdminsProfileRoute: AdminsProfileRoute,
+  AdminsRolesRoute: AdminsRolesRoute,
+  AdminsUserSalariesRoute: AdminsUserSalariesRoute,
+  AdminsUsersRoute: AdminsUsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
