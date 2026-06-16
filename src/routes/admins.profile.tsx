@@ -137,7 +137,7 @@ function AdminProfilePage() {
               <label className="block text-sm font-medium text-slate-700 mb-1">{t('profile.personal_data.role')}</label>
               <input
                 type="text"
-                value={profile?.role || 'Admin'}
+                value={typeof profile?.role === 'object' ? profile?.role?.name || profile?.role?.code || '' : profile?.role || 'Admin'}
                 disabled
                 className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 cursor-not-allowed"
               />

@@ -39,6 +39,7 @@ function OrdersPage() {
   const [phone, setPhone] = useState('')
   const [paymentType, setPaymentType] = useState('cash')
   const [isPaid, setIsPaid] = useState(false)
+  const [isFree, setIsFree] = useState(false)
   const [status, setStatus] = useState('pending')
   const [items, setItems] = useState<IOrderItem[]>([])
   
@@ -51,6 +52,7 @@ function OrdersPage() {
     setPhone('')
     setPaymentType('cash')
     setIsPaid(false)
+    setIsFree(false)
     setStatus('pending')
     setItems([])
     setTempProductId('')
@@ -63,6 +65,7 @@ function OrdersPage() {
     setPhone(order.phone || '')
     setPaymentType(order.payment_type || 'cash')
     setIsPaid(order.is_paid || false)
+    setIsFree(order.is_free || false)
     setStatus(order.status || 'pending')
     setItems(order.items?.map(i => ({ product: getProductId(i.product), quantity: Number(i.quantity || 0), price: i.price })) || [])
     setTempProductId('')
@@ -83,6 +86,7 @@ function OrdersPage() {
       phone,
       payment_type: paymentType,
       is_paid: isPaid,
+      is_free: isFree,
       status,
       items: items.map(item => ({
         product: getProductId(item.product),
@@ -166,6 +170,7 @@ function OrdersPage() {
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.id')}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.modal.phone_label')}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.amount')}</th>
+                <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.is_free') || 'Biypul'}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.payment_status')}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">{t('orders.table.actions')}</th>
@@ -174,7 +179,7 @@ function OrdersPage() {
             <tbody className="divide-y divide-slate-100">
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
                     {t('orders.table.not_found')}
                   </td>
                 </tr>
@@ -184,6 +189,15 @@ function OrdersPage() {
                     <td className="px-6 py-4 text-sm font-medium text-slate-900">#{order.id}</td>
                     <td className="px-6 py-4 text-sm text-slate-700 font-medium">{order.phone || '-'}</td>
                     <td className="px-6 py-4 text-sm text-slate-700">{order.total_amount}</td>
+                    <td className="px-6 py-4">
+                      {order.is_free ? (
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border bg-purple-50 text-purple-700 border-purple-100">
+                          {t('orders.table.is_free') || 'Biypul'}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">-</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-100`}>
                         {order.status}
@@ -289,11 +303,19 @@ function OrdersPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mt-4 pt-2">
-                  <input type="checkbox" id="isPaid" checked={isPaid} onChange={e => setIsPaid(e.target.checked)} className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
-                  <label htmlFor="isPaid" className="text-sm font-medium text-slate-700 cursor-pointer">
-                    {t('orders.modal.is_paid_label')}
-                  </label>
+                <div className="flex flex-wrap gap-4 mt-4 pt-2">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="isPaid" checked={isPaid} onChange={e => setIsPaid(e.target.checked)} className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
+                    <label htmlFor="isPaid" className="text-sm font-medium text-slate-700 cursor-pointer">
+                      {t('orders.modal.is_paid_label')}
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="isFree" checked={isFree} onChange={e => setIsFree(e.target.checked)} className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500" />
+                    <label htmlFor="isFree" className="text-sm font-medium text-slate-700 cursor-pointer">
+                      {t('orders.modal.is_free_label') || 'Biypul'}
+                    </label>
+                  </div>
                 </div>
 
                 <div className="bg-emerald-50 rounded-xl p-4 mt-4 flex items-center justify-between border border-emerald-100">

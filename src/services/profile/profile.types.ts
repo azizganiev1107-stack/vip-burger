@@ -3,7 +3,7 @@ export interface IAdminProfile {
   first_name?: string;
   last_name?: string;
   full_name?: string;
-  role?: string;
+  role?: any;
   phone?: string;
   [key: string]: any;
 }
@@ -13,7 +13,7 @@ export interface IUserProfile {
   first_name?: string;
   last_name?: string;
   full_name?: string;
-  role?: string;
+  role?: any;
   phone?: string;
   [key: string]: any;
 }

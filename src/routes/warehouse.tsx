@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-hot-toast'
 import { 
@@ -49,7 +49,7 @@ function RouteComponent() {
   const [activeTab, setActiveTab] = useState<'items' | 'inventory' | 'movements' | 'suppliers' | 'settings'>('items')
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{t('warehouse.title')}</h1>
@@ -58,7 +58,7 @@ function RouteComponent() {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+      <div className="flex overflow-x-auto whitespace-nowrap scrollbar-none gap-2 border-b border-slate-200 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <TabButton active={activeTab === 'items'} onClick={() => setActiveTab('items')} icon={<PackageSearch className="w-4 h-4" />} label={t('warehouse.tabs.items')} />
         <TabButton active={activeTab === 'inventory'} onClick={() => setActiveTab('inventory')} icon={<Boxes className="w-4 h-4" />} label={t('warehouse.tabs.inventory')} />
         <TabButton active={activeTab === 'movements'} onClick={() => setActiveTab('movements')} icon={<ArrowRightLeft className="w-4 h-4" />} label={t('warehouse.tabs.movements')} />
@@ -83,7 +83,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
     <button
       onClick={onClick}
       className={clsx(
-        "flex items-center gap-2 px-4 py-2.5 rounded-t-xl font-medium text-sm transition-all relative top-[3px]",
+        "flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-t-xl font-medium text-sm transition-all relative top-[3px]",
         active 
           ? "text-indigo-600 bg-white border border-slate-200 border-b-white shadow-sm" 
           : "text-slate-500 hover:text-slate-700 hover:bg-slate-50 border border-transparent"
@@ -187,7 +187,9 @@ function ItemsTab() {
           {t('warehouse.items.new_item')}
         </button>
       </div>
-      <div className="overflow-x-auto flex-1">
+      
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto flex-1">
         <table className="w-full text-left">
           <thead className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
             <tr>
@@ -218,11 +220,53 @@ function ItemsTab() {
         </table>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="block md:hidden divide-y divide-slate-100 flex-1">
+        {items.map((item: any) => (
+          <div key={item.id} className="p-4 flex flex-col gap-2 hover:bg-slate-50/50">
+            <div className="flex justify-between items-start">
+              <span className="text-xs font-semibold text-slate-400">#{item.id}</span>
+              <span className="text-sm font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">{item.purchase_price || '-'}</span>
+            </div>
+            <div className="font-semibold text-slate-900 text-base">{item.name || '-'}</div>
+            <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 mt-1">
+              <div>
+                <span className="block font-medium text-slate-400">{t('warehouse.items.table.supplier')}</span>
+                <span className="text-slate-700 font-medium">{item.supplier_details?.name || item.supplier || '-'}</span>
+              </div>
+              <div>
+                <span className="block font-medium text-slate-400">{t('warehouse.items.table.unit')}</span>
+                <span className="text-slate-700 font-medium">{item.unit_details?.name || item.unit || '-'}</span>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-3 pt-3 border-t border-slate-100">
+              <button 
+                onClick={() => openEditModal(item)} 
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-900"
+              >
+                {t('warehouse.items.table.edit')}
+              </button>
+              <button 
+                onClick={() => handleDelete(item.id)} 
+                className="text-sm font-medium text-red-600 hover:text-red-900"
+              >
+                {t('warehouse.items.table.delete')}
+              </button>
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <div className="p-8 text-center text-slate-500 text-sm">
+            {t('warehouse.items.not_found')}
+          </div>
+        )}
+      </div>
+
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex-none flex items-center justify-between p-6 border-b border-slate-100">
+            <div className="flex-none flex items-center justify-between p-4 sm:p-6 border-b border-slate-100">
               <h2 className="text-xl font-bold text-slate-800">
                 {editingItem ? t('warehouse.items.modal.edit_title') : t('warehouse.items.modal.new_title')}
               </h2>
@@ -231,7 +275,7 @@ function ItemsTab() {
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {errorMsg && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center">{errorMsg}</div>}
                 
@@ -242,32 +286,28 @@ function ItemsTab() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.items.modal.supplier')}</label>
-                  <select
+                  <CustomSelect
                     value={supplier}
-                    onChange={(e) => setSupplier(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  >
-                    <option value="">{t('warehouse.items.modal.not_selected')}</option>
-                    {suppliers.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+                    onChange={setSupplier}
+                    placeholder={t('warehouse.items.modal.not_selected')}
+                    options={suppliers.map((s: any) => ({ value: s.id, label: s.name }))}
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.items.modal.unit')}</label>
-                  <select
+                  <CustomSelect
                     value={unit}
-                    onChange={(e) => setUnit(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  >
-                    <option value="">{t('warehouse.items.modal.not_selected')}</option>
-                    {units.map((u: any) => <option key={u.id} value={u.id}>{u.name}</option>)}
-                  </select>
+                    onChange={setUnit}
+                    placeholder={t('warehouse.items.modal.not_selected')}
+                    options={units.map((u: any) => ({ value: u.id, label: u.name }))}
+                  />
                 </div>
 
                 <div>
@@ -276,13 +316,13 @@ function ItemsTab() {
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
                 <div className="pt-4 flex gap-3">
-                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">{t('warehouse.items.modal.cancel')}</button>
-                  <button type="submit" disabled={createItem.isPending || patchItem.isPending} className="flex-1 px-4 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                  <button type="button" onClick={closeModal} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">{t('warehouse.items.modal.cancel')}</button>
+                  <button type="submit" disabled={createItem.isPending || patchItem.isPending} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
                     {(createItem.isPending || patchItem.isPending) && <Loader2 className="w-4 h-4 animate-spin" />} {t('warehouse.items.modal.save')}
                   </button>
                 </div>
@@ -303,36 +343,65 @@ function InventoryTab() {
   if (isLoading) return <LoadingSpinner />
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
-          <tr>
-            <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.id')}</th>
-            <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.item')}</th>
-            <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.warehouse')}</th>
-            <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.quantity')}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {inventory.map((inv: any) => (
-            <tr key={inv.id} className="hover:bg-slate-50/50">
-              <td className="px-6 py-4 text-sm font-medium text-slate-900">#{inv.id}</td>
-              <td className="px-6 py-4 font-medium text-slate-950">
-                {inv.item_details?.name || `Item ID: ${inv.item}`}
-              </td>
-              <td className="px-6 py-4 text-sm text-slate-600">
-                {inv.warehouse_details?.name || `Warehouse ID: ${inv.warehouse}`}
-              </td>
-              <td className="px-6 py-4">
-                <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-100">
-                  {inv.quantity}
-                </span>
-              </td>
+    <div className="flex flex-col h-full">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full text-left">
+          <thead className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
+            <tr>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.id')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.item')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.warehouse')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.quantity')}</th>
             </tr>
-          ))}
-          {inventory.length === 0 && <EmptyState text={t('warehouse.inventory.not_found')} />}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {inventory.map((inv: any) => (
+              <tr key={inv.id} className="hover:bg-slate-50/50">
+                <td className="px-6 py-4 text-sm font-medium text-slate-900">#{inv.id}</td>
+                <td className="px-6 py-4 font-medium text-slate-950">
+                  {inv.item_details?.name || `Item ID: ${inv.item}`}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-600">
+                  {inv.warehouse_details?.name || `Warehouse ID: ${inv.warehouse}`}
+                </td>
+                <td className="px-6 py-4">
+                  <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-100">
+                    {inv.quantity}
+                  </span>
+                </td>
+              </tr>
+            ))}
+            {inventory.length === 0 && <EmptyState text={t('warehouse.inventory.not_found')} />}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden divide-y divide-slate-100">
+        {inventory.map((inv: any) => (
+          <div key={inv.id} className="p-4 flex flex-col gap-2 hover:bg-slate-50/50">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-semibold text-slate-400">#{inv.id}</span>
+              <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-100">
+                {inv.quantity}
+              </span>
+            </div>
+            <div className="font-semibold text-slate-950 text-base">
+              {inv.item_details?.name || `Item ID: ${inv.item}`}
+            </div>
+            <div className="text-xs text-slate-500 mt-1">
+              <span className="font-medium text-slate-400 block">{t('warehouse.inventory.table.warehouse')}</span>
+              <span className="text-slate-700 font-medium">{inv.warehouse_details?.name || `Warehouse ID: ${inv.warehouse}`}</span>
+            </div>
+          </div>
+        ))}
+        {inventory.length === 0 && (
+          <div className="p-8 text-center text-slate-500 text-sm">
+            {t('warehouse.inventory.not_found')}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -372,11 +441,24 @@ function MovementsTab() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!item) {
+      toast.error(t('warehouse.movements.modal.select_item'))
+      return
+    }
+    if (!warehouse) {
+      toast.error(t('warehouse.movements.modal.select_warehouse'))
+      return
+    }
+    if (type === 'transfer' && !destinationWarehouse) {
+      toast.error(t('warehouse.movements.modal.select_destination_warehouse'))
+      return
+    }
+
     const payload = {
-      item: item ? Number(item) : null,
+      item: Number(item),
       quantity: quantity || '1',
       movement_type: type,
-      warehouse: warehouse ? Number(warehouse) : null,
+      warehouse: Number(warehouse),
       destination_warehouse: type === 'transfer' && destinationWarehouse ? Number(destinationWarehouse) : null,
     }
 
@@ -401,7 +483,9 @@ function MovementsTab() {
           {t('warehouse.movements.new_movement')}
         </button>
       </div>
-      <div className="overflow-x-auto flex-1">
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto flex-1">
         <table className="w-full text-left">
           <thead className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
             <tr>
@@ -453,6 +537,60 @@ function MovementsTab() {
         </table>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="block md:hidden divide-y divide-slate-100 flex-1">
+        {movements.map((m: any) => (
+          <div key={m.id} className="p-4 flex flex-col gap-2 hover:bg-slate-50/50">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-semibold text-slate-400">#{m.id}</span>
+              <span className={clsx(
+                "inline-flex px-2.5 py-0.5 rounded text-xs font-semibold",
+                m.movement_type === 'in' && "bg-green-50 text-green-700 border border-green-100",
+                m.movement_type === 'out' && "bg-red-50 text-red-700 border border-red-100",
+                m.movement_type === 'transfer' && "bg-blue-50 text-blue-700 border border-blue-100"
+              )}>
+                {m.movement_type === 'in' && t('warehouse.movements.modal.type_in')}
+                {m.movement_type === 'out' && t('warehouse.movements.modal.type_out')}
+                {m.movement_type === 'transfer' && t('warehouse.movements.modal.type_transfer')}
+                {!['in', 'out', 'transfer'].includes(m.movement_type || '') && (m.movement_type || m.type || '-')}
+              </span>
+            </div>
+            
+            <div className="font-semibold text-slate-900 text-base">
+              {m.item_details?.name || `Item ID: ${m.item}`}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 mt-1">
+              <div>
+                <span className="block font-medium text-slate-400">{t('warehouse.movements.table.quantity')}</span>
+                <span className="text-slate-900 font-bold">{m.quantity}</span>
+              </div>
+              <div>
+                <span className="block font-medium text-slate-400">{t('warehouse.movements.table.warehouse')}</span>
+                <span className="text-slate-700 font-medium">
+                  {m.movement_type === 'transfer' ? (
+                    <span className="flex flex-wrap items-center gap-1">
+                      <span>{m.warehouse_details?.name || `W: ${m.warehouse}`}</span>
+                      <span>→</span>
+                      <span className="font-semibold text-indigo-600">
+                        {m.destination_warehouse_details?.name || `W: ${m.destination_warehouse}`}
+                      </span>
+                    </span>
+                  ) : (
+                    m.warehouse_details?.name || `W: ${m.warehouse}`
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+        {movements.length === 0 && (
+          <div className="p-8 text-center text-slate-500 text-sm">
+            {t('warehouse.movements.not_found')}
+          </div>
+        )}
+      </div>
+
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
@@ -468,15 +606,12 @@ function MovementsTab() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.item')}</label>
-                  <select
+                  <CustomSelect
                     value={item}
-                    onChange={(e) => setItem(e.target.value === '' ? '' : Number(e.target.value))}
-                    required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  >
-                    <option value="">{t('warehouse.movements.modal.select_item')}</option>
-                    {items.map((i: any) => <option key={i.id} value={i.id}>{i.name}</option>)}
-                  </select>
+                    onChange={setItem}
+                    placeholder={t('warehouse.movements.modal.select_item')}
+                    options={items.map((i: any) => ({ value: i.id, label: i.name }))}
+                  />
                 </div>
 
                 <div>
@@ -487,50 +622,45 @@ function MovementsTab() {
                     min="1"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.type')}</label>
-                  <select
+                  <CustomSelect
                     value={type}
-                    onChange={(e) => setType(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  >
-                    <option value="in">{t('warehouse.movements.modal.type_in')}</option>
-                    <option value="out">{t('warehouse.movements.modal.type_out')}</option>
-                    <option value="transfer">{t('warehouse.movements.modal.type_transfer')}</option>
-                  </select>
+                    onChange={setType}
+                    placeholder=""
+                    options={[
+                      { value: 'in', label: t('warehouse.movements.modal.type_in') },
+                      { value: 'out', label: t('warehouse.movements.modal.type_out') },
+                      { value: 'transfer', label: t('warehouse.movements.modal.type_transfer') }
+                    ]}
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.warehouse')}</label>
-                  <select
+                  <CustomSelect
                     value={warehouse}
-                    onChange={(e) => setWarehouse(e.target.value === '' ? '' : Number(e.target.value))}
-                    required
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  >
-                    <option value="">{t('warehouse.movements.modal.select_warehouse')}</option>
-                    {warehouses.map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
-                  </select>
+                    onChange={setWarehouse}
+                    placeholder={t('warehouse.movements.modal.select_warehouse')}
+                    options={warehouses.map((w: any) => ({ value: w.id, label: w.name }))}
+                  />
                 </div>
 
                 {type === 'transfer' && (
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.destination_warehouse')}</label>
-                    <select
+                    <CustomSelect
                       value={destinationWarehouse}
-                      onChange={(e) => setDestinationWarehouse(e.target.value === '' ? '' : Number(e.target.value))}
-                      required
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                    >
-                      <option value="">{t('warehouse.movements.modal.select_destination_warehouse')}</option>
-                      {warehouses
+                      onChange={setDestinationWarehouse}
+                      placeholder={t('warehouse.movements.modal.select_destination_warehouse')}
+                      options={warehouses
                         .filter((w: any) => w.id !== Number(warehouse))
-                        .map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
-                    </select>
+                        .map((w: any) => ({ value: w.id, label: w.name }))}
+                    />
                   </div>
                 )}
 
@@ -627,7 +757,9 @@ function SuppliersTab() {
           {t('warehouse.suppliers.new_supplier')}
         </button>
       </div>
-      <div className="overflow-x-auto flex-1">
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto flex-1">
         <table className="w-full text-left">
           <thead className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
             <tr>
@@ -656,11 +788,56 @@ function SuppliersTab() {
         </table>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="block md:hidden divide-y divide-slate-100 flex-1">
+        {suppliers.map((s: any) => (
+          <div key={s.id} className="p-4 flex flex-col gap-2 hover:bg-slate-50/50">
+            <div className="flex justify-between items-start">
+              <span className="text-xs font-semibold text-slate-400">#{s.id}</span>
+              {s.phone ? (
+                <a 
+                  href={`tel:${s.phone.replace(/\s/g, '')}`} 
+                  className="text-xs font-semibold text-indigo-600 hover:underline"
+                >
+                  {s.phone}
+                </a>
+              ) : (
+                <span className="text-xs text-slate-400">-</span>
+              )}
+            </div>
+            <div className="font-semibold text-slate-900 text-base">{s.name || '-'}</div>
+            <div className="text-xs text-slate-500 mt-1">
+              <span className="block font-medium text-slate-400">{t('warehouse.suppliers.table.address')}</span>
+              <span className="text-slate-700 font-medium">{s.address || '-'}</span>
+            </div>
+            <div className="flex justify-end gap-3 mt-3 pt-3 border-t border-slate-100">
+              <button 
+                onClick={() => openEditModal(s)} 
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-900"
+              >
+                {t('warehouse.suppliers.table.edit')}
+              </button>
+              <button 
+                onClick={() => handleDelete(s.id)} 
+                className="text-sm font-medium text-red-600 hover:text-red-900"
+              >
+                {t('warehouse.suppliers.table.delete')}
+              </button>
+            </div>
+          </div>
+        ))}
+        {suppliers.length === 0 && (
+          <div className="p-8 text-center text-slate-500 text-sm">
+            {t('warehouse.suppliers.not_found')}
+          </div>
+        )}
+      </div>
+
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex-none flex items-center justify-between p-6 border-b border-slate-100">
+            <div className="flex-none flex items-center justify-between p-4 sm:p-6 border-b border-slate-100">
               <h2 className="text-xl font-bold text-slate-800">
                 {editingSupplier ? t('warehouse.suppliers.modal.edit_title') : t('warehouse.suppliers.modal.new_title')}
               </h2>
@@ -669,7 +846,7 @@ function SuppliersTab() {
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {errorMsg && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center">{errorMsg}</div>}
                 
@@ -680,7 +857,7 @@ function SuppliersTab() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
@@ -690,7 +867,7 @@ function SuppliersTab() {
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
@@ -700,13 +877,13 @@ function SuppliersTab() {
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
                   />
                 </div>
 
                 <div className="pt-4 flex gap-3">
-                  <button type="button" onClick={closeModal} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">{t('warehouse.items.modal.cancel')}</button>
-                  <button type="submit" disabled={createSupplier.isPending || patchSupplier.isPending} className="flex-1 px-4 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                  <button type="button" onClick={closeModal} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">{t('warehouse.items.modal.cancel')}</button>
+                  <button type="submit" disabled={createSupplier.isPending || patchSupplier.isPending} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
                     {(createSupplier.isPending || patchSupplier.isPending) && <Loader2 className="w-4 h-4 animate-spin" />} {t('warehouse.items.modal.save')}
                   </button>
                 </div>
@@ -723,10 +900,10 @@ function SettingsTab() {
   const { t } = useTranslation()
   return (
     <div className="flex flex-col md:flex-row min-h-[400px]">
-      <div className="flex-1 border-r border-slate-200">
+      <div className="flex-1 border-b md:border-b-0 md:border-r border-slate-200">
         <SettingsSubSection title={t('warehouse.settings.categories')} icon={<Tags className="w-5 h-5" />} component={<CategoriesList />} />
       </div>
-      <div className="flex-1 border-r border-slate-200">
+      <div className="flex-1 border-b md:border-b-0 md:border-r border-slate-200">
         <SettingsSubSection title={t('warehouse.settings.units')} icon={<Ruler className="w-5 h-5" />} component={<UnitsList />} />
       </div>
       <div className="flex-1">
@@ -934,13 +1111,13 @@ function PromptModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex-none flex items-center justify-between p-5 border-b border-slate-100">
+        <div className="flex-none flex items-center justify-between p-4 sm:p-5 border-b border-slate-100">
           <h2 className="text-lg font-bold text-slate-800">{title}</h2>
           <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
           {fields.map(f => (
             <div key={f.name}>
               <label className="block text-sm font-medium text-slate-700 mb-1">{f.label}</label>
@@ -949,15 +1126,15 @@ function PromptModal({
                 required={f.required}
                 value={values[f.name] || ''}
                 onChange={e => setValues({...values, [f.name]: e.target.value})}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
               />
             </div>
           ))}
           <div className="pt-2 flex gap-3">
-            <button type="button" onClick={handleClose} className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
+            <button type="button" onClick={handleClose} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">
               {t('warehouse.items.modal.cancel')}
             </button>
-            <button type="submit" disabled={isPending} className="flex-1 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+            <button type="submit" disabled={isPending} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
               {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />} {t('warehouse.items.modal.save')}
             </button>
           </div>
@@ -982,5 +1159,67 @@ function EmptyState({ text }: { text: string }) {
         {text}
       </td>
     </tr>
+  )
+}
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  disabled
+}: {
+  value: any,
+  onChange: (val: any) => void,
+  options: { value: any, label: string }[],
+  placeholder: string,
+  disabled?: boolean
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const selectedOption = options.find(o => o.value === value)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handleOutsideClick = () => setIsOpen(false)
+    window.addEventListener('click', handleOutsideClick)
+    return () => window.removeEventListener('click', handleOutsideClick)
+  }, [isOpen])
+
+  return (
+    <div className="relative" onClick={e => e.stopPropagation()}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base text-left bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none flex justify-between items-center disabled:opacity-50"
+      >
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+        <span className="text-slate-400 text-xs ml-2">▼</span>
+      </button>
+      {isOpen && (
+        <div className="absolute z-[110] w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {placeholder && (
+            <div 
+              onClick={() => { onChange(''); setIsOpen(false); }}
+              className="px-3 py-2 text-sm sm:text-base text-slate-400 hover:bg-slate-50 cursor-pointer truncate"
+            >
+              {placeholder}
+            </div>
+          )}
+          {options.map(o => (
+            <div
+              key={String(o.value)}
+              onClick={() => { onChange(o.value); setIsOpen(false); }}
+              className={clsx(
+                "px-3 py-2 text-sm sm:text-base hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer truncate",
+                value === o.value && "bg-indigo-50 text-indigo-600 font-semibold"
+              )}
+            >
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

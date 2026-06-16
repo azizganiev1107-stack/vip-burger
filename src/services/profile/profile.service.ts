@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { profileServiceApi } from "./profile.api"
 import type { 
+  IAdminProfile,
   IAdminProfileUpdate, 
   IChangePasswordRequest, 
+  IUserProfile,
   IUserProfileUpdate 
 } from "./profile.types"
 
@@ -13,10 +15,11 @@ export const PROFILE_KEYS = {
 }
 
 // --- Admin Profile Hooks ---
-export const useGetAdminProfile = () => {
-  return useQuery({
+export const useGetAdminProfile = (options?: any) => {
+  return useQuery<IAdminProfile, Error>({
     queryKey: PROFILE_KEYS.adminProfile,
     queryFn: profileServiceApi.getAdminProfile,
+    ...options
   })
 }
 
@@ -47,11 +50,11 @@ export const useChangePassword = () => {
   })
 }
 
-// --- Regular User Profile Hooks ---
-export const useGetUserProfile = () => {
-  return useQuery({
+export const useGetUserProfile = (options?: any) => {
+  return useQuery<IUserProfile, Error>({
     queryKey: PROFILE_KEYS.userProfile,
     queryFn: profileServiceApi.getUserProfile,
+    ...options
   })
 }
 

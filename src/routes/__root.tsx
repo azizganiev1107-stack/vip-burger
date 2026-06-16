@@ -2,6 +2,7 @@ import { createRootRoute, Link, Outlet, useLocation, useNavigate } from '@tansta
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { useTranslation } from 'react-i18next'
 import { Toaster } from 'react-hot-toast'
+import { useGetAdminProfile } from '@/services/profile'
 import { 
   Package, 
   Menu,
@@ -30,16 +31,37 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   const { t } = useTranslation()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024
+    }
+    return true
+  })
   const location = useLocation()
   const navigate = useNavigate()
+
+  const token = localStorage.getItem('token')
+  const { data: profile } = useGetAdminProfile({ enabled: !!token })
+
+  const isSatiwshi = profile?.role?.id === 4 || profile?.role?.code === 'satiwshi' || profile?.role?.name === 'satiwshi' || profile?.role === 'satiwshi'
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsSidebarOpen(false)
+    }
+  }, [location.pathname])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token && location.pathname !== '/login') {
       navigate({ to: '/login', replace: true })
+      return
     }
-  }, [location.pathname, navigate])
+
+    if (token && profile && isSatiwshi && location.pathname !== '/warehouse') {
+      navigate({ to: '/warehouse', replace: true })
+    }
+  }, [location.pathname, profile, isSatiwshi, navigate])
 
   if (location.pathname === '/login') {
     return <Outlet />
@@ -57,6 +79,10 @@ function RootLayout() {
     { label: t('sidebar.profile'), to: '/admins/profile', icon: UserCircle },
   ]
 
+  const filteredNavItems = isSatiwshi
+    ? navItems.filter(item => item.to === '/warehouse')
+    : navItems
+
   return (
     <div className="h-screen overflow-hidden bg-slate-50 flex">
       {/* Decorative Background */}
@@ -64,6 +90,14 @@ function RootLayout() {
         <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-primary-200/20 blur-[120px] rounded-full animate-float" />
         <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-orange-200/20 blur-[120px] rounded-full animate-float" style={{ animationDelay: '-1.5s' }} />
       </div>
+
+      {/* Sidebar Mobile Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <aside 
@@ -89,7 +123,7 @@ function RootLayout() {
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
-            {navItems.map((item) => (
+            {filteredNavItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -116,10 +150,18 @@ function RootLayout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex-shrink-0 flex items-center justify-between z-40">
-          <h2 className="text-xl font-display font-bold text-slate-800">
-            {/* Overview */}
-          </h2>
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 flex-shrink-0 flex items-center justify-between z-40">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors lg:hidden text-slate-600"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-xl font-display font-bold text-slate-800">
+              {/* Overview */}
+            </h2>
+          </div>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => {
@@ -127,10 +169,10 @@ function RootLayout() {
                 localStorage.removeItem('auth')
                 navigate({ to: '/login', replace: true })
               }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
-              <LogOut className="w-4 h-4" />
-              {t('header.logout')}
+              <LogOut className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline">{t('header.logout')}</span>
             </button>
             <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm overflow-hidden">
               <img src="https://ui-avatars.com/api/?name=Admin&background=f97316&color=fff" alt="Avatar" />
@@ -138,7 +180,7 @@ function RootLayout() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           <Outlet />
         </div>
       </main>

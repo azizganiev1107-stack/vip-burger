@@ -45,6 +45,7 @@ export interface IOrder {
   phone?: string
   payment_type?: string
   is_paid?: boolean
+  is_free?: boolean
   status?: string
   items?: any[]
   created_at?: string
@@ -62,6 +63,7 @@ export interface IOrderCreate {
   phone: string
   payment_type: string
   is_paid?: boolean
+  is_free?: boolean
   status?: string
   total_amount?: string
   items: IOrderItem[]
