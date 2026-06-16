@@ -26,7 +26,16 @@ export interface IWarehouseItem {
 export interface IWarehouseMovement {
   id: number
   item?: number
+  item_details?: IWarehouseItem
   quantity?: number | string
+  warehouse?: number
+  warehouse_details?: IWarehouse
+  destination_warehouse?: number
+  destination_warehouse_details?: IWarehouse
+  movement_type?: 'in' | 'out' | 'transfer' | string
+  date?: string
+  notes?: string
+  user?: number
   from_warehouse?: number
   to_warehouse?: number
   type?: string

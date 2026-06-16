@@ -12,6 +12,14 @@ import {
 import type { IOrder, IOrderItem } from '@/services/orders'
 import { ShoppingBag, Plus, Edit2, Trash2, Loader2, X } from 'lucide-react'
 
+const getProductId = (product: any): number => {
+  if (!product) return 0
+  if (typeof product === 'object') {
+    return Number(product.id || 0)
+  }
+  return Number(product)
+}
+
 export const Route = createFileRoute('/orders')({
   component: OrdersPage,
 })
@@ -56,7 +64,7 @@ function OrdersPage() {
     setPaymentType(order.payment_type || 'cash')
     setIsPaid(order.is_paid || false)
     setStatus(order.status || 'pending')
-    setItems(order.items?.map(i => ({ product: i.product, quantity: i.quantity, price: i.price })) || [])
+    setItems(order.items?.map(i => ({ product: getProductId(i.product), quantity: Number(i.quantity || 0), price: i.price })) || [])
     setTempProductId('')
     setTempQuantity('1')
     setIsModalOpen(true)
@@ -76,7 +84,10 @@ function OrdersPage() {
       payment_type: paymentType,
       is_paid: isPaid,
       status,
-      items
+      items: items.map(item => ({
+        product: getProductId(item.product),
+        quantity: Number(item.quantity)
+      }))
     }
 
     if (editingOrder) {
@@ -111,13 +122,13 @@ function OrdersPage() {
   const availableProducts = productsData?.data || []
 
   const calculatedTotal = items.reduce((sum, item) => {
-    const prod = availableProducts.find(p => p.id === item.product)
+    const prod = availableProducts.find(p => p.id === getProductId(item.product))
     return sum + (prod ? parseFloat(prod.price) * item.quantity : 0)
   }, 0)
 
   const handleAddItem = () => {
     if (!tempProductId || !tempQuantity) return
-    setItems([...items, { product: parseInt(tempProductId), quantity: parseInt(tempQuantity) }])
+    setItems([...items, { product: getProductId(tempProductId), quantity: parseInt(tempQuantity) }])
     setTempProductId('')
     setTempQuantity('1')
   }
@@ -236,10 +247,10 @@ function OrdersPage() {
                   {items.length > 0 && (
                     <div className="mb-3 space-y-2">
                       {items.map((item, idx) => {
-                        const prod = availableProducts.find(p => p.id === item.product)
+                        const prod = availableProducts.find(p => p.id === getProductId(item.product))
                         return (
                           <div key={idx} className="flex items-center justify-between bg-white p-2 border border-slate-200 rounded-lg text-sm">
-                            <span>{prod ? prod.name : `ID: ${item.product}`} x {item.quantity}</span>
+                            <span>{prod ? prod.name : `ID: ${getProductId(item.product)}`} x {item.quantity}</span>
                             <button type="button" onClick={() => handleRemoveItem(idx)} className="text-red-500 hover:text-red-700">
                               <X className="w-4 h-4" />
                             </button>

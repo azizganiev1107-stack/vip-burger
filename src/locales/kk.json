@@ -167,8 +167,11 @@
         "type": "Háreket túri",
         "type_in": "Kiriw (IN)",
         "type_out": "Shıǵıw (OUT)",
+        "type_transfer": "Kóshiriw (TRANSFER)",
         "warehouse": "Sklad",
-        "select_warehouse": "Skladı tańlań..."
+        "select_warehouse": "Skladı tańlań...",
+        "destination_warehouse": "Barar jeri skladı (Filial)",
+        "select_destination_warehouse": "Barar jeri skladın tańlań..."
       }
     },
     "suppliers": {

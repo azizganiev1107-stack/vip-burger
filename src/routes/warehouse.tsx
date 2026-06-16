@@ -317,8 +317,12 @@ function InventoryTab() {
           {inventory.map((inv: any) => (
             <tr key={inv.id} className="hover:bg-slate-50/50">
               <td className="px-6 py-4 text-sm font-medium text-slate-900">#{inv.id}</td>
-              <td className="px-6 py-4 font-medium text-indigo-600">ID: {inv.item}</td>
-              <td className="px-6 py-4 text-sm text-slate-600">ID: {inv.warehouse}</td>
+              <td className="px-6 py-4 font-medium text-slate-950">
+                {inv.item_details?.name || `Item ID: ${inv.item}`}
+              </td>
+              <td className="px-6 py-4 text-sm text-slate-600">
+                {inv.warehouse_details?.name || `Warehouse ID: ${inv.warehouse}`}
+              </td>
               <td className="px-6 py-4">
                 <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-100">
                   {inv.quantity}
@@ -348,6 +352,7 @@ function MovementsTab() {
   const [quantity, setQuantity] = useState('')
   const [type, setType] = useState('in')
   const [warehouse, setWarehouse] = useState<number | ''>('')
+  const [destinationWarehouse, setDestinationWarehouse] = useState<number | ''>('')
 
   const movements = data?.data || []
   const items = itemsData?.data || []
@@ -358,6 +363,7 @@ function MovementsTab() {
     setQuantity('')
     setType('in')
     setWarehouse('')
+    setDestinationWarehouse('')
     setErrorMsg('')
     setIsModalOpen(true)
   }
@@ -371,6 +377,7 @@ function MovementsTab() {
       quantity: quantity || '1',
       movement_type: type,
       warehouse: warehouse ? Number(warehouse) : null,
+      destination_warehouse: type === 'transfer' && destinationWarehouse ? Number(destinationWarehouse) : null,
     }
 
     createMovement.mutate(
@@ -409,11 +416,35 @@ function MovementsTab() {
             {movements.map((m: any) => (
               <tr key={m.id} className="hover:bg-slate-50/50">
                 <td className="px-6 py-4 text-sm font-medium text-slate-900">#{m.id}</td>
-                <td className="px-6 py-4 text-sm text-slate-700">Item ID: {m.item}</td>
+                <td className="px-6 py-4 text-sm text-slate-700 font-medium">
+                  {m.item_details?.name || `Item ID: ${m.item}`}
+                </td>
                 <td className="px-6 py-4 text-sm font-bold">{m.quantity}</td>
-                <td className="px-6 py-4 text-sm text-slate-600">{m.movement_type || m.type || '-'}</td>
+                <td className="px-6 py-4 text-sm">
+                  <span className={clsx(
+                    "inline-flex px-2.5 py-1 rounded-md text-xs font-semibold",
+                    m.movement_type === 'in' && "bg-green-50 text-green-700 border border-green-100",
+                    m.movement_type === 'out' && "bg-red-50 text-red-700 border border-red-100",
+                    m.movement_type === 'transfer' && "bg-blue-50 text-blue-700 border border-blue-100"
+                  )}>
+                    {m.movement_type === 'in' && t('warehouse.movements.modal.type_in')}
+                    {m.movement_type === 'out' && t('warehouse.movements.modal.type_out')}
+                    {m.movement_type === 'transfer' && t('warehouse.movements.modal.type_transfer')}
+                    {!['in', 'out', 'transfer'].includes(m.movement_type || '') && (m.movement_type || m.type || '-')}
+                  </span>
+                </td>
                 <td className="px-6 py-4 text-sm text-slate-500">
-                  W: {m.warehouse || '-'}
+                  {m.movement_type === 'transfer' ? (
+                    <div className="flex items-center gap-1.5">
+                      <span>{m.warehouse_details?.name || `W: ${m.warehouse}`}</span>
+                      <span className="text-slate-400">→</span>
+                      <span className="font-semibold text-slate-700">
+                        {m.destination_warehouse_details?.name || `W: ${m.destination_warehouse}`}
+                      </span>
+                    </div>
+                  ) : (
+                    m.warehouse_details?.name || `W: ${m.warehouse}`
+                  )}
                 </td>
               </tr>
             ))}
@@ -469,6 +500,7 @@ function MovementsTab() {
                   >
                     <option value="in">{t('warehouse.movements.modal.type_in')}</option>
                     <option value="out">{t('warehouse.movements.modal.type_out')}</option>
+                    <option value="transfer">{t('warehouse.movements.modal.type_transfer')}</option>
                   </select>
                 </div>
 
@@ -484,6 +516,23 @@ function MovementsTab() {
                     {warehouses.map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
                 </div>
+
+                {type === 'transfer' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.destination_warehouse')}</label>
+                    <select
+                      value={destinationWarehouse}
+                      onChange={(e) => setDestinationWarehouse(e.target.value === '' ? '' : Number(e.target.value))}
+                      required
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    >
+                      <option value="">{t('warehouse.movements.modal.select_destination_warehouse')}</option>
+                      {warehouses
+                        .filter((w: any) => w.id !== Number(warehouse))
+                        .map((w: any) => <option key={w.id} value={w.id}>{w.name}</option>)}
+                    </select>
+                  </div>
+                )}
 
                 <div className="pt-4 flex gap-3">
                   <button type="button" onClick={closeModal} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">{t('warehouse.items.modal.cancel')}</button>
