@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-hot-toast'
 import { 
@@ -148,6 +148,22 @@ function TransactionsView() {
 
   const transactions = data?.data || []
   const categoriesList = categoriesData?.data || []
+
+  const filteredCategories = categoriesList.filter(cat => 
+    type === 'income' ? cat.type === 'INCOME' : cat.type === 'EXPENSE'
+  )
+
+  useEffect(() => {
+    if (categoryId) {
+      const selectedCat = categoriesList.find(c => c.id === categoryId)
+      if (selectedCat) {
+        const expectedType = type === 'income' ? 'INCOME' : 'EXPENSE'
+        if (selectedCat.type !== expectedType) {
+          setCategoryId('')
+        }
+      }
+    }
+  }, [type, categoryId, categoriesList])
 
   const formatMoney = (val: string) => {
     const num = Number(val)
@@ -358,7 +374,7 @@ function TransactionsView() {
                     disabled={isLoadingCategories}
                   >
                     <option value="">{t('finance.transactions.no_category')}</option>
-                    {categoriesList.map(cat => (
+                    {filteredCategories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
