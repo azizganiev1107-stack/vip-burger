@@ -30,6 +30,17 @@ function ShiftsPage() {
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
 
+  const formatTimeForInput = (timeString?: string) => {
+    if (!timeString) return ''
+    if (timeString.includes('T')) {
+      const parts = timeString.split('T')[1]
+      if (parts) {
+        return parts.substring(0, 5) // "HH:MM"
+      }
+    }
+    return timeString.substring(0, 5) // "HH:MM"
+  }
+
   const openCreateModal = () => {
     setEditingShift(null)
     setType('')
@@ -41,8 +52,8 @@ function ShiftsPage() {
   const openEditModal = (shift: IShift) => {
     setEditingShift(shift)
     setType(shift.type ? shift.type.toString() : '')
-    setStartTime(shift.start_time || '')
-    setEndTime(shift.end_time || '')
+    setStartTime(formatTimeForInput(shift.start_time))
+    setEndTime(formatTimeForInput(shift.end_time))
     setIsModalOpen(true)
   }
 
@@ -56,8 +67,8 @@ function ShiftsPage() {
 
     const payload: any = {
       type: type ? parseInt(type, 10) : undefined,
-      start_time: startTime || undefined,
-      end_time: endTime || undefined
+      start_time: startTime ? (startTime.length === 5 ? `${startTime}:00` : startTime) : undefined,
+      end_time: endTime ? (endTime.length === 5 ? `${endTime}:00` : endTime) : undefined
     }
 
     if (editingShift) {
@@ -140,10 +151,10 @@ function ShiftsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-700 font-medium">
-                      {shift.start_time ? new Date(shift.start_time).toLocaleString() : '-'}
+                      {shift.start_time ? (shift.start_time.includes('T') ? shift.start_time.split('T')[1].substring(0, 5) : shift.start_time.substring(0, 5)) : '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-700">
-                      {shift.end_time ? new Date(shift.end_time).toLocaleString() : '-'}
+                      {shift.end_time ? (shift.end_time.includes('T') ? shift.end_time.split('T')[1].substring(0, 5) : shift.end_time.substring(0, 5)) : '-'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -184,12 +195,12 @@ function ShiftsPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('shifts.modal.start_time')}</label>
-                  <input type="datetime-local" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                  <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('shifts.modal.end_time')}</label>
-                  <input type="datetime-local" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                  <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                 </div>
 
                 <div className="pt-4 flex gap-3">

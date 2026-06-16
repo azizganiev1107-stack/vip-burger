@@ -480,6 +480,12 @@ function MovementsTab() {
   const branches = branchesData?.data || []
   const users = usersData?.data || []
 
+  useEffect(() => {
+    if (isModalOpen && isSatiwshi && warehouses.length === 1) {
+      setWarehouse(warehouses[0].id)
+    }
+  }, [isModalOpen, isSatiwshi, warehouses])
+
   const handleResetFilters = () => {
     setSearchVal('')
     setMovementType('')
@@ -704,7 +710,6 @@ function MovementsTab() {
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.unit')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.type')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.warehouse')}</th>
-              <th className="px-6 py-4 font-semibold">{t('warehouse.filters.user')}</th>
               <th className="px-6 py-4 font-semibold">{t('orders.table.date') || "Sáne"}</th>
             </tr>
           </thead>
@@ -741,13 +746,6 @@ function MovementsTab() {
                     </div>
                   ) : (
                     m.warehouse_details?.name || `W: ${m.warehouse}`
-                  )}
-                </td>
-                <td className="px-6 py-4 text-sm text-slate-600">
-                  {m.user_details ? (
-                    `${m.user_details.first_name || ''} ${m.user_details.last_name || ''}`.trim() || m.user_details.username
-                  ) : (
-                    m.user || '-'
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-500">
@@ -808,18 +806,9 @@ function MovementsTab() {
               </div>
             </div>
 
-            {/* Date & User info on Mobile */}
-            <div className="flex justify-between text-[11px] text-slate-400 mt-1 border-t border-slate-100/60 pt-1">
-              <span>
-                {m.date ? new Date(m.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
-              </span>
-              <span>
-                {m.user_details ? (
-                  `${m.user_details.first_name || ''} ${m.user_details.last_name || ''}`.trim() || m.user_details.username
-                ) : (
-                  m.user || '-'
-                )}
-              </span>
+            {/* Date info on Mobile */}
+            <div className="text-[11px] text-slate-400 mt-1 border-t border-slate-100/60 pt-1 text-right">
+              {m.date ? new Date(m.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
             </div>
           </div>
         ))}
@@ -845,30 +834,32 @@ function MovementsTab() {
                 
                 {/* Movement Type Toggle */}
                 <div className="flex bg-slate-100 p-1 rounded-xl">
-                  <button
-                    type="button"
-                    disabled={isSatiwshi}
-                    onClick={() => setType('in')}
-                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'in' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
-                  >
-                    {t('warehouse.movements.modal.type_in')}
-                  </button>
+                  {!isSatiwshi && (
+                    <button
+                      type="button"
+                      onClick={() => setType('in')}
+                      className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'in' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500'}`}
+                    >
+                      {t('warehouse.movements.modal.type_in')}
+                    </button>
+                  )}
                   <button
                     type="button"
                     disabled={isSatiwshi}
                     onClick={() => setType('out')}
-                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'out' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'out' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500'} disabled:opacity-100 disabled:bg-white disabled:text-red-600 disabled:shadow-sm`}
                   >
                     {t('warehouse.movements.modal.type_out')}
                   </button>
-                  <button
-                    type="button"
-                    disabled={isSatiwshi}
-                    onClick={() => setType('transfer')}
-                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'transfer' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
-                  >
-                    {t('warehouse.movements.modal.type_transfer')}
-                  </button>
+                  {!isSatiwshi && (
+                    <button
+                      type="button"
+                      onClick={() => setType('transfer')}
+                      className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'transfer' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}
+                    >
+                      {t('warehouse.movements.modal.type_transfer')}
+                    </button>
+                  )}
                 </div>
 
                 <div>
@@ -895,12 +886,18 @@ function MovementsTab() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.warehouse')}</label>
-                  <CustomSelect
-                    value={warehouse}
-                    onChange={setWarehouse}
-                    placeholder={t('warehouse.movements.modal.select_warehouse')}
-                    options={warehouses.map((w: any) => ({ value: w.id, label: w.name }))}
-                  />
+                  {isSatiwshi && warehouses.length === 1 ? (
+                    <div className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-650 font-medium text-sm">
+                      {warehouses[0].name}
+                    </div>
+                  ) : (
+                    <CustomSelect
+                      value={warehouse}
+                      onChange={setWarehouse}
+                      placeholder={t('warehouse.movements.modal.select_warehouse')}
+                      options={warehouses.map((w: any) => ({ value: w.id, label: w.name }))}
+                    />
+                  )}
                 </div>
 
                 {type === 'transfer' && (
