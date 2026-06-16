@@ -16,7 +16,9 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as EmployeesRouteImport } from './routes/employees'
+import { Route as BranchesRouteImport } from './routes/branches'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BranchesIdRouteImport } from './routes/branches_.$id'
 import { Route as AdminsUsersRouteImport } from './routes/admins.users'
 import { Route as AdminsUserSalariesRouteImport } from './routes/admins.user-salaries'
 import { Route as AdminsRolesRouteImport } from './routes/admins.roles'
@@ -57,9 +59,19 @@ const EmployeesRoute = EmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BranchesRoute = BranchesRouteImport.update({
+  id: '/branches',
+  path: '/branches',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BranchesIdRoute = BranchesIdRouteImport.update({
+  id: '/branches_/$id',
+  path: '/branches/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminsUsersRoute = AdminsUsersRouteImport.update({
@@ -85,6 +97,7 @@ const AdminsProfileRoute = AdminsProfileRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/branches': typeof BranchesRoute
   '/employees': typeof EmployeesRoute
   '/finance': typeof FinanceRoute
   '/login': typeof LoginRoute
@@ -96,9 +109,11 @@ export interface FileRoutesByFullPath {
   '/admins/roles': typeof AdminsRolesRoute
   '/admins/user-salaries': typeof AdminsUserSalariesRoute
   '/admins/users': typeof AdminsUsersRoute
+  '/branches/$id': typeof BranchesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/branches': typeof BranchesRoute
   '/employees': typeof EmployeesRoute
   '/finance': typeof FinanceRoute
   '/login': typeof LoginRoute
@@ -110,10 +125,12 @@ export interface FileRoutesByTo {
   '/admins/roles': typeof AdminsRolesRoute
   '/admins/user-salaries': typeof AdminsUserSalariesRoute
   '/admins/users': typeof AdminsUsersRoute
+  '/branches/$id': typeof BranchesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/branches': typeof BranchesRoute
   '/employees': typeof EmployeesRoute
   '/finance': typeof FinanceRoute
   '/login': typeof LoginRoute
@@ -125,11 +142,13 @@ export interface FileRoutesById {
   '/admins/roles': typeof AdminsRolesRoute
   '/admins/user-salaries': typeof AdminsUserSalariesRoute
   '/admins/users': typeof AdminsUsersRoute
+  '/branches_/$id': typeof BranchesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/branches'
     | '/employees'
     | '/finance'
     | '/login'
@@ -141,9 +160,11 @@ export interface FileRouteTypes {
     | '/admins/roles'
     | '/admins/user-salaries'
     | '/admins/users'
+    | '/branches/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/branches'
     | '/employees'
     | '/finance'
     | '/login'
@@ -155,9 +176,11 @@ export interface FileRouteTypes {
     | '/admins/roles'
     | '/admins/user-salaries'
     | '/admins/users'
+    | '/branches/$id'
   id:
     | '__root__'
     | '/'
+    | '/branches'
     | '/employees'
     | '/finance'
     | '/login'
@@ -169,10 +192,12 @@ export interface FileRouteTypes {
     | '/admins/roles'
     | '/admins/user-salaries'
     | '/admins/users'
+    | '/branches_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BranchesRoute: typeof BranchesRoute
   EmployeesRoute: typeof EmployeesRoute
   FinanceRoute: typeof FinanceRoute
   LoginRoute: typeof LoginRoute
@@ -184,6 +209,7 @@ export interface RootRouteChildren {
   AdminsRolesRoute: typeof AdminsRolesRoute
   AdminsUserSalariesRoute: typeof AdminsUserSalariesRoute
   AdminsUsersRoute: typeof AdminsUsersRoute
+  BranchesIdRoute: typeof BranchesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -237,11 +263,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmployeesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/branches': {
+      id: '/branches'
+      path: '/branches'
+      fullPath: '/branches'
+      preLoaderRoute: typeof BranchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/branches_/$id': {
+      id: '/branches_/$id'
+      path: '/branches/$id'
+      fullPath: '/branches/$id'
+      preLoaderRoute: typeof BranchesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admins/users': {
@@ -277,6 +317,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BranchesRoute: BranchesRoute,
   EmployeesRoute: EmployeesRoute,
   FinanceRoute: FinanceRoute,
   LoginRoute: LoginRoute,
@@ -288,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminsRolesRoute: AdminsRolesRoute,
   AdminsUserSalariesRoute: AdminsUserSalariesRoute,
   AdminsUsersRoute: AdminsUsersRoute,
+  BranchesIdRoute: BranchesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -74,6 +74,24 @@
       "save": "Saqlaw",
       "delete_confirm": "Usı buyırtpanı haqıyqattan da óshirip taslamaqshısız ba?",
       "save_error": "Saqlawda qátelik"
+    },
+    "filters": {
+      "search": "İzlew...",
+      "more": "Filtrler",
+      "reset": "Tazalaw",
+      "start_date": "Baslanıw sánesi",
+      "end_date": "Tamamlanıw sánesi",
+      "min_price": "Min. summa",
+      "max_price": "Maks. summa",
+      "is_paid": "Tólengen",
+      "not_paid": "Tólenbegen",
+      "all": "Barlıǵı",
+      "status_pending": "Kútpekte",
+      "status_completed": "Tawsıldı",
+      "status_cancelled": "Biykarlandı",
+      "pay_cash": "Naq pul",
+      "pay_card": "Karta",
+      "pay_online": "Online"
     }
   },
   "shifts": {
@@ -110,8 +128,8 @@
     "subtitle": "Zapaslardı, tovarlardı hám logistikanı basqarıw",
     "tabs": {
       "items": "Tovarlar",
-      "inventory": "Inventar",
-      "movements": "Háreket",
+      "inventory": "Sklad",
+      "movements": "Kirim / Shig'im",
       "suppliers": "Jetkerip beriwshiler",
       "settings": "Sazlawlar"
     },
@@ -147,7 +165,8 @@
         "id": "ID",
         "item": "Tovar (Item ID)",
         "warehouse": "Sklad (Warehouse ID)",
-        "quantity": "Muǵdarı"
+        "quantity": "Muǵdarı",
+        "unit": "Ólshem"
       },
       "not_found": "Inventar bos"
     },
@@ -157,6 +176,7 @@
         "id": "ID",
         "item": "Tovar",
         "quantity": "Muǵdarı",
+        "unit": "Ólshem",
         "type": "Háreket túri",
         "warehouse": "Sklad"
       },
@@ -167,9 +187,9 @@
         "select_item": "Tovardı tańlań...",
         "quantity": "Muǵdarı",
         "type": "Háreket túri",
-        "type_in": "Kiriw (IN)",
-        "type_out": "Shıǵıw (OUT)",
-        "type_transfer": "Kóshiriw (TRANSFER)",
+        "type_in": "Kiriw",
+        "type_out": "Shıǵıw",
+        "type_transfer": "Kóshiriw",
         "warehouse": "Sklad",
         "select_warehouse": "Skladı tańlań...",
         "destination_warehouse": "Barar jeri skladı (Filial)",
@@ -211,6 +231,16 @@
         "warehouse_name": "Sklad atamasın kiritiń (mısalı: Tiykarǵı sklad):",
         "warehouse_loc": "Mánzili (májbúriy emes):"
       }
+    },
+    "filters": {
+      "search": "İzlew...",
+      "more": "Filtrler",
+      "reset": "Tazalaw",
+      "start_date": "Baslanıw sánesi",
+      "end_date": "Tamamlanıw sánesi",
+      "min_qty": "Min. muǵdar",
+      "max_qty": "Maks. muǵdar",
+      "user": "Paydalanıwshı"
     }
   },
   "finance": {
@@ -230,7 +260,10 @@
       "methods": {
         "cash": "Naq pul",
         "card": "Karta",
-        "transfer": "Awdarma"
+        "transfer": "Awdarma",
+        "click": "Click",
+        "online": "Online",
+        "bank_transfer": "Bank awdarması"
       },
       "table": {
         "id": "ID",
@@ -395,7 +428,8 @@
     "users": "Xızmetkerler",
     "salaries": "Is haqı",
     "roles": "Roller",
-    "profile": "Profil"
+    "profile": "Profil",
+    "branches": "Filiallar"
   },
   "header": {
     "logout": "Shıǵıw"
@@ -407,6 +441,46 @@
     "password": "Parol",
     "loading": "Júklenbekte...",
     "submit": "Kiriw"
+  },
+  "branches": {
+    "title": "Filiallar",
+    "subtitle": "Filiallar hám olardıń maǵlıwmatların basqarıw",
+    "add_branch": "Filial qosıw",
+    "table": {
+      "id": "ID",
+      "name": "Ataması",
+      "address": "Mánzili",
+      "phone": "Telefonı",
+      "status": "Statusı",
+      "actions": "Háreketler",
+      "not_found": "Filiallar tabılmadı"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Aktiv emes"
+    },
+    "modal": {
+      "edit_title": "Filialdı ózgertiw",
+      "new_title": "Taza filial",
+      "name": "Filial ataması",
+      "address": "Mánzili",
+      "phone": "Telefonı",
+      "is_active": "Aktiv",
+      "cancel": "Biykarlaw",
+      "save": "Saqlaw",
+      "delete_confirm": "Usı filialdı haqıyqattan da óshirip taslamaqshısız ba?"
+    },
+    "detail": {
+      "title": "Filial maǵlıwmatları",
+      "back": "Artqa",
+      "info": "Tiykarǵı maǵlıwmatlar",
+      "id": "Filial ID",
+      "name": "Ataması",
+      "address": "Mánzili",
+      "phone": "Telefonı",
+      "status": "Statusı",
+      "created_at": "Jaratılǵan waqtı"
+    }
   },
   "common": {
     "error": "Qátelik júz berdi",

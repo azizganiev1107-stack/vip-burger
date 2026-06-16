@@ -1,9 +1,6 @@
 import { createRootRoute, Link, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { useTranslation } from 'react-i18next'
-import { Toaster } from 'react-hot-toast'
 import { useGetAdminProfile } from '@/services/profile'
-import ReloadPrompt from '@/components/ReloadPrompt'
 import { 
   Package, 
   Menu,
@@ -16,7 +13,8 @@ import {
   ShoppingBag,
   PackageSearch,
   CalendarClock,
-  LogOut
+  LogOut,
+  MapPin
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { clsx, type ClassValue } from 'clsx'
@@ -77,6 +75,7 @@ function RootLayout() {
     { label: t('sidebar.users'), to: '/admins/users', icon: Users },
     { label: t('sidebar.salaries'), to: '/admins/user-salaries', icon: Banknote },
     { label: t('sidebar.roles'), to: '/admins/roles', icon: Shield },
+    { label: t('sidebar.branches'), to: '/branches', icon: MapPin },
     { label: t('sidebar.profile'), to: '/admins/profile', icon: UserCircle },
   ]
 
@@ -185,10 +184,6 @@ function RootLayout() {
           <Outlet />
         </div>
       </main>
-
-      <ReloadPrompt />
-      <TanStackRouterDevtools />
-      <Toaster position="top-right" />
     </div>
   )
 }

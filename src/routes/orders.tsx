@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-hot-toast'
 import { 
@@ -10,7 +10,11 @@ import {
   useGetProducts
 } from '@/services/orders'
 import type { IOrder, IOrderItem } from '@/services/orders'
+import { useGetBranches } from '@/services/branches'
+import { useGetUsers } from '@/services/users'
+import { useGetShifts } from '@/services/shifts'
 import { ShoppingBag, Plus, Edit2, Trash2, Loader2, X } from 'lucide-react'
+import { clsx } from 'clsx'
 
 const getProductId = (product: any): number => {
   if (!product) return 0
@@ -26,8 +30,44 @@ export const Route = createFileRoute('/orders')({
 
 function OrdersPage() {
   const { t } = useTranslation()
-  const { data, isLoading } = useGetOrders({ limit: 100 })
+
+  // Filter States
+  const [showFilters, setShowFilters] = useState(false)
+  const [searchVal, setSearchVal] = useState('')
+  const [phoneFilter, setPhoneFilter] = useState('')
+  const [branchFilter, setBranchFilter] = useState<number | ''>('')
+  const [userFilter, setUserFilter] = useState<number | ''>('')
+  const [shiftFilter, setShiftFilter] = useState<number | ''>('')
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState<string | ''>('')
+  const [statusFilter, setStatusFilter] = useState<string | ''>('')
+  const [isPaidFilter, setIsPaidFilter] = useState<boolean | null | ''>('')
+  const [minPrice, setMinPrice] = useState('')
+  const [maxPrice, setMaxPrice] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+
+  // Query Hook with filters
+  const { data, isLoading } = useGetOrders({
+    limit: 100,
+    search: searchVal || undefined,
+    phone: phoneFilter || undefined,
+    branch: branchFilter || undefined,
+    user: userFilter || undefined,
+    shift: shiftFilter || undefined,
+    payment_type: paymentTypeFilter || undefined,
+    status: statusFilter || undefined,
+    is_paid: isPaidFilter === true ? true : isPaidFilter === false ? false : undefined,
+    min_total_price: minPrice || undefined,
+    max_total_price: maxPrice || undefined,
+    start_date: startDate ? `${startDate}T00:00:00` : undefined,
+    end_date: endDate ? `${endDate}T23:59:59` : undefined,
+  })
+
   const { data: productsData } = useGetProducts({ limit: 100 })
+  const { data: branchesData } = useGetBranches({ limit: 100 })
+  const { data: usersData } = useGetUsers({ limit: 100 })
+  const { data: shiftsData } = useGetShifts({ limit: 100 })
+
   const createOrder = useCreateOrder()
   const patchOrder = usePatchOrder()
   const deleteOrder = useDeleteOrder()
@@ -46,6 +86,21 @@ function OrdersPage() {
   // Temp item form
   const [tempProductId, setTempProductId] = useState('')
   const [tempQuantity, setTempQuantity] = useState('1')
+
+  const handleResetFilters = () => {
+    setSearchVal('')
+    setPhoneFilter('')
+    setBranchFilter('')
+    setUserFilter('')
+    setShiftFilter('')
+    setPaymentTypeFilter('')
+    setStatusFilter('')
+    setIsPaidFilter('')
+    setMinPrice('')
+    setMaxPrice('')
+    setStartDate('')
+    setEndDate('')
+  }
 
   const openCreateModal = () => {
     setEditingOrder(null)
@@ -124,6 +179,9 @@ function OrdersPage() {
 
   const orders = data?.data || []
   const availableProducts = productsData?.data || []
+  const branches = branchesData?.data || []
+  const users = usersData?.data || []
+  const shifts = shiftsData?.data || []
 
   const calculatedTotal = items.reduce((sum, item) => {
     const prod = availableProducts.find(p => p.id === getProductId(item.product))
@@ -158,6 +216,185 @@ function OrdersPage() {
         </button>
       </div>
 
+      {/* Search and Filters panel */}
+      <div className="p-6 border-b border-slate-200 bg-slate-50/20 space-y-4">
+        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 w-full">
+            <div className="relative w-full">
+              <input
+                type="text"
+                value={searchVal}
+                onChange={e => setSearchVal(e.target.value)}
+                placeholder={t('orders.filters.search') || "İzlew..."}
+                className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+              />
+              <span className="absolute left-3.5 top-3.5 text-slate-400 text-sm">🔍</span>
+            </div>
+            <div className="relative w-full">
+              <input
+                type="text"
+                value={phoneFilter}
+                onChange={e => setPhoneFilter(e.target.value)}
+                placeholder={t('orders.modal.phone_label') || "Telefon nomeri"}
+                className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+              />
+              <span className="absolute left-3.5 top-3.5 text-slate-400 text-sm">📞</span>
+            </div>
+          </div>
+
+          <div className="flex gap-2 w-full md:w-auto justify-end">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2.5 text-sm font-medium border border-slate-200 rounded-xl bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
+            >
+              <span>{showFilters ? '▲' : '▼'}</span> {t('orders.filters.more') || "Filtrler"}
+            </button>
+            {(searchVal || phoneFilter || branchFilter || userFilter || shiftFilter || paymentTypeFilter || statusFilter || isPaidFilter !== '' || minPrice || maxPrice || startDate || endDate) && (
+              <button
+                onClick={handleResetFilters}
+                className="px-4 py-2.5 text-sm font-medium border border-red-200 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+              >
+                {t('orders.filters.reset') || "Tazalaw"}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Collapsible filters grid */}
+        {showFilters && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-200/60 animate-in fade-in duration-200">
+            {/* Branch */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('sidebar.branches') || "Filial"}</label>
+              <CustomSelect
+                value={branchFilter}
+                onChange={setBranchFilter}
+                placeholder={t('orders.modal.not_selected')}
+                options={branches.map((b: any) => ({ value: b.id, label: b.name }))}
+              />
+            </div>
+
+            {/* User / Kassir */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.table.employee') || "Kassir"}</label>
+              <CustomSelect
+                value={userFilter}
+                onChange={setUserFilter}
+                placeholder={t('orders.modal.not_selected')}
+                options={users.map((u: any) => ({ 
+                  value: u.id, 
+                  label: u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.username 
+                }))}
+              />
+            </div>
+
+            {/* Shift */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('shifts.title') || "Smena"}</label>
+              <CustomSelect
+                value={shiftFilter}
+                onChange={setShiftFilter}
+                placeholder={t('orders.modal.not_selected')}
+                options={shifts.map((s: any) => ({ 
+                  value: s.id, 
+                  label: `Shift #${s.id} (${s.start_time ? new Date(s.start_time).toLocaleDateString() : ''})` 
+                }))}
+              />
+            </div>
+
+            {/* Payment Type */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.modal.payment_type') || "Tólew túri"}</label>
+              <CustomSelect
+                value={paymentTypeFilter}
+                onChange={setPaymentTypeFilter}
+                placeholder={t('orders.filters.all') || "Barlıǵı"}
+                options={[
+                  { value: 'cash', label: t('orders.filters.pay_cash') || "Naq pul" },
+                  { value: 'card', label: t('orders.filters.pay_card') || "Karta" },
+                  { value: 'online', label: t('orders.filters.pay_online') || "Online" }
+                ]}
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Status</label>
+              <CustomSelect
+                value={statusFilter}
+                onChange={setStatusFilter}
+                placeholder={t('orders.filters.all') || "Barlıǵı"}
+                options={[
+                  { value: 'pending', label: t('orders.filters.status_pending') || "Kútpekte" },
+                  { value: 'completed', label: t('orders.filters.status_completed') || "Tawsıldı" },
+                  { value: 'cancelled', label: t('orders.filters.status_cancelled') || "Biykarlandı" }
+                ]}
+              />
+            </div>
+
+            {/* Paid status */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.table.payment_status') || "Tólew statusı"}</label>
+              <CustomSelect
+                value={isPaidFilter}
+                onChange={setIsPaidFilter}
+                placeholder={t('orders.filters.all') || "Barlıǵı"}
+                options={[
+                  { value: true, label: t('orders.filters.is_paid') || "Tólengen" },
+                  { value: false, label: t('orders.filters.not_paid') || "Tólenbegen" }
+                ]}
+              />
+            </div>
+
+            {/* Min & Max Price */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.filters.min_price') || "Min. summa"}</label>
+                <input
+                  type="number"
+                  value={minPrice}
+                  onChange={e => setMinPrice(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.filters.max_price') || "Maks. summa"}</label>
+                <input
+                  type="number"
+                  value={maxPrice}
+                  onChange={e => setMaxPrice(e.target.value)}
+                  placeholder="999k+"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Start & End Date */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.filters.start_date') || "Baslanıw sánesi"}</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={e => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('orders.filters.end_date') || "Tamamlanıw sánesi"}</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={e => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="p-6 overflow-x-auto">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -173,13 +410,15 @@ function OrdersPage() {
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.is_free') || 'Biypul'}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.payment_status')}</th>
+                <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.employee') || 'Kassir'}</th>
+                <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('orders.table.date') || 'Sáne'}</th>
                 <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">{t('orders.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={9} className="px-6 py-8 text-center text-slate-500">
                     {t('orders.table.not_found')}
                   </td>
                 </tr>
@@ -207,6 +446,16 @@ function OrdersPage() {
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${order.is_paid ? 'bg-green-50 text-green-700 border-green-100' : 'bg-orange-50 text-orange-700 border-orange-100'}`}>
                         {order.is_paid ? t('orders.status.paid') : t('orders.status.pending')}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {order.user_details ? (
+                        `${order.user_details.first_name || ''} ${order.user_details.last_name || ''}`.trim() || order.user_details.username
+                      ) : (
+                        order.user || '-'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-500">
+                      {order.created_at ? new Date(order.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -332,6 +581,68 @@ function OrdersPage() {
               </form>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  disabled
+}: {
+  value: any,
+  onChange: (val: any) => void,
+  options: { value: any, label: string }[],
+  placeholder: string,
+  disabled?: boolean
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const selectedOption = options.find(o => o.value === value)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handleOutsideClick = () => setIsOpen(false)
+    window.addEventListener('click', handleOutsideClick)
+    return () => window.removeEventListener('click', handleOutsideClick)
+  }, [isOpen])
+
+  return (
+    <div className="relative" onClick={e => e.stopPropagation()}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-3 py-2 text-sm text-left bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none flex justify-between items-center disabled:opacity-50"
+      >
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+        <span className="text-slate-400 text-xs ml-2">▼</span>
+      </button>
+      {isOpen && (
+        <div className="absolute z-[110] w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {placeholder && (
+            <div 
+              onClick={() => { onChange(''); setIsOpen(false); }}
+              className="px-3 py-2 text-sm text-slate-400 hover:bg-slate-50 cursor-pointer truncate"
+            >
+              {placeholder}
+            </div>
+          )}
+          {options.map(o => (
+            <div
+              key={String(o.value)}
+              onClick={() => { onChange(o.value); setIsOpen(false); }}
+              className={clsx(
+                "px-3 py-2 text-sm hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer truncate",
+                value === o.value && "bg-indigo-50 text-indigo-600 font-semibold"
+              )}
+            >
+              {o.label}
+            </div>
+          ))}
         </div>
       )}
     </div>

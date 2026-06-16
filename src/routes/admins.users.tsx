@@ -8,8 +8,9 @@ import {
   useDeleteUser 
 } from '@/services/users'
 import { useGetRoles } from '@/services/roles'
+import { useGetBranches } from '@/services/branches'
 import type { IUser } from '@/services/users'
-import { Users as UsersIcon, Plus, Edit2, Trash2, Loader2, X } from 'lucide-react'
+import { Users as UsersIcon, Plus, Edit2, Trash2, Loader2, X, MapPin } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 export const Route = createFileRoute('/admins/users')({
@@ -20,6 +21,7 @@ function UsersPage() {
   const { t } = useTranslation()
   const { data, isLoading } = useGetUsers()
   const { data: rolesData, isLoading: isLoadingRoles } = useGetRoles({ limit: 100 })
+  const { data: branchesData, isLoading: isLoadingBranches } = useGetBranches({ limit: 100 })
   const createUser = useCreateUser()
   const patchUser = usePatchUser()
   const deleteUser = useDeleteUser()
@@ -34,6 +36,7 @@ function UsersPage() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [roleId, setRoleId] = useState<number | ''>('')
+  const [branchId, setBranchId] = useState<number | ''>('')
   const [isActive, setIsActive] = useState(true)
 
   const openCreateModal = () => {
@@ -43,6 +46,7 @@ function UsersPage() {
     setPhone('')
     setPassword('')
     setRoleId('')
+    setBranchId('')
     setIsActive(true)
     setErrorMsg('')
     setIsModalOpen(true)
@@ -55,6 +59,8 @@ function UsersPage() {
     setPhone(user.phone)
     setPassword('') // Don't show existing password
     setRoleId(user.role?.id || '')
+    const bVal = user.branch || user.branch_id
+    setBranchId(bVal ? (typeof bVal === 'object' ? bVal.id : bVal) : '')
     setIsActive(user.is_active ?? true)
     setErrorMsg('')
     setIsModalOpen(true)
@@ -63,6 +69,7 @@ function UsersPage() {
   const closeModal = () => {
     setIsModalOpen(false)
     setEditingUser(null)
+    setBranchId('')
     setErrorMsg('')
   }
 
@@ -80,6 +87,7 @@ function UsersPage() {
             phone,
             ...(password ? { password } : {}), // only send password if changed
             role_id: Number(roleId),
+            branch_id: branchId === '' ? null : Number(branchId),
             is_active: isActive
           } 
         },
@@ -106,6 +114,7 @@ function UsersPage() {
           phone,
           password,
           role_id: Number(roleId),
+          branch_id: branchId === '' ? null : Number(branchId),
           is_active: isActive
         },
         { 
@@ -133,6 +142,22 @@ function UsersPage() {
 
   const users = data?.data || []
   const rolesList = rolesData?.data || []
+
+  const getBranchName = (branchVal: any) => {
+    if (!branchVal) return ''
+    if (typeof branchVal === 'object') return branchVal.name || ''
+    const bId = Number(branchVal)
+    const found = branchesData?.data?.find(b => b.id === bId)
+    return found ? found.name : `Branch #${bId}`
+  }
+
+  const getRoleName = (roleVal: any) => {
+    if (!roleVal) return ''
+    if (typeof roleVal === 'object') return roleVal.name || `Role #${roleVal.id}`
+    const rId = Number(roleVal)
+    const found = rolesList.find(r => r.id === rId)
+    return found ? found.name : `Role #${rId}`
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -166,6 +191,7 @@ function UsersPage() {
                   <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('users.table.id')}</th>
                   <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('users.table.employee')}</th>
                   <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('users.table.role')}</th>
+                  <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('sidebar.branches')}</th>
                   <th className="px-6 py-4 text-sm font-semibold text-slate-600">{t('users.table.status')}</th>
                   <th className="px-6 py-4 text-sm font-semibold text-slate-600 text-right">{t('users.table.actions')}</th>
                 </tr>
@@ -173,7 +199,7 @@ function UsersPage() {
               <tbody className="divide-y divide-slate-100">
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                    <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
                       {t('users.not_found')}
                     </td>
                   </tr>
@@ -190,9 +216,21 @@ function UsersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
-                          {user.role?.name || `Role ID: ${user.role?.id}`}
+                        <span className="inline-flex items-center self-start px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                          {getRoleName(user.role || user.role_id)}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {(user.branch || user.branch_id) ? (
+                          <span className="text-sm text-slate-700 flex items-center gap-1 font-medium">
+                            <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                            {getBranchName(user.branch || user.branch_id)}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-400 italic">
+                            {t('warehouse.items.modal.not_selected')}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         {user.is_active === false ? (
@@ -312,6 +350,23 @@ function UsersPage() {
                     {rolesList.map(role => (
                       <option key={role.id} value={role.id}>
                         {role.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('sidebar.branches')}</label>
+                  <select
+                    value={branchId}
+                    onChange={(e) => setBranchId(e.target.value === '' ? '' : Number(e.target.value))}
+                    disabled={isLoadingBranches}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  >
+                    <option value="">{t('warehouse.items.modal.not_selected')}</option>
+                    {branchesData?.data?.map(branch => (
+                      <option key={branch.id} value={branch.id}>
+                        {branch.name}
                       </option>
                     ))}
                   </select>

@@ -61,6 +61,8 @@ export interface IWarehouse {
   id: number
   name?: string
   location?: string
+  branch?: any
+  branch_id?: number | null
   [key: string]: any
 }
 

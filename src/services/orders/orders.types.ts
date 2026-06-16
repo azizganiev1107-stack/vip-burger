@@ -77,6 +77,7 @@ export interface IOrderListParams {
   end_date?: string
   limit?: number
   page?: number
+  [key: string]: any
 }
 
 export interface IOrderListResponse {

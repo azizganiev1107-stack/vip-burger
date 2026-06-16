@@ -4,12 +4,14 @@ import type { IUser } from "../users"
 export interface ITransactionCategory {
   id: number
   name: string
+  type: 'INCOME' | 'EXPENSE'
   is_active: boolean
   created_at: string
 }
 
 export interface ITransactionCategoryCreate {
   name: string
+  type: 'INCOME' | 'EXPENSE'
   is_active?: boolean
 }
 
@@ -32,7 +34,7 @@ export interface ITransactionCategoryListResponse {
 
 // --- Finance Transactions ---
 export type TransactionType = 'income' | 'expense' | string
-export type PaymentMethod = 'cash' | 'card' | 'transfer' | string
+export type PaymentMethod = 'cash' | 'card' | 'click' | 'online' | 'bank_transfer' | string
 
 export interface ITransaction {
   id: number

@@ -40,6 +40,8 @@ import {
   useCreateWarehouse,
   useDeleteWarehouse
 } from '@/services/warehouse'
+import { useGetBranches } from '@/services/branches'
+import { useGetUsers } from '@/services/users'
 
 export const Route = createFileRoute('/warehouse')({
   component: RouteComponent,
@@ -365,6 +367,7 @@ function InventoryTab() {
               <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.item')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.warehouse')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.quantity')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.inventory.table.unit')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -382,6 +385,9 @@ function InventoryTab() {
                     {inv.quantity}
                   </span>
                 </td>
+                <td className="px-6 py-4 text-sm text-slate-600 font-medium">
+                  {inv.item_details?.unit_details?.name || '-'}
+                </td>
               </tr>
             ))}
             {inventory.length === 0 && <EmptyState text={t('warehouse.inventory.not_found')} />}
@@ -396,7 +402,7 @@ function InventoryTab() {
             <div className="flex justify-between items-center">
               <span className="text-xs font-semibold text-slate-400">#{inv.id}</span>
               <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-bold bg-green-50 text-green-700 border border-green-100">
-                {inv.quantity}
+                {inv.quantity} {inv.item_details?.unit_details?.name || ''}
               </span>
             </div>
             <div className="font-semibold text-slate-950 text-base">
@@ -424,9 +430,38 @@ function MovementsTab() {
   const { data: profile } = useGetAdminProfile({ enabled: !!token })
   const isSatiwshi = profile?.role?.id === 4 || profile?.role?.code === 'satiwshi' || profile?.role?.name === 'satiwshi' || profile?.role === 'satiwshi'
 
-  const { data, isLoading } = useGetWarehouseMovements({ limit: 100 })
+  // Filter States
+  const [showFilters, setShowFilters] = useState(false)
+  const [searchVal, setSearchVal] = useState('')
+  const [movementType, setMovementType] = useState<string | ''>('')
+  const [itemId, setItemId] = useState<number | ''>('')
+  const [warehouseId, setWarehouseId] = useState<number | ''>('')
+  const [branchId, setBranchId] = useState<number | ''>('')
+  const [userId, setUserId] = useState<number | ''>('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [minQty, setMinQty] = useState('')
+  const [maxQty, setMaxQty] = useState('')
+
+  // Query Hook with filters
+  const { data, isLoading } = useGetWarehouseMovements({
+    limit: 100,
+    search: searchVal || undefined,
+    movement_type: movementType || undefined,
+    item: itemId || undefined,
+    warehouse: warehouseId || undefined,
+    warehouse__branch: branchId || undefined,
+    user: userId || undefined,
+    start_date: startDate ? `${startDate}T00:00:00` : undefined,
+    end_date: endDate ? `${endDate}T23:59:59` : undefined,
+    min_quantity: minQty || undefined,
+    max_quantity: maxQty || undefined,
+  })
+
   const { data: itemsData } = useGetWarehouseItems({ limit: 100 })
   const { data: warehousesData } = useGetWarehouses({ limit: 100 })
+  const { data: branchesData } = useGetBranches({ limit: 100 })
+  const { data: usersData } = useGetUsers({ limit: 100 })
 
   const createMovement = useCreateWarehouseMovement()
 
@@ -442,6 +477,21 @@ function MovementsTab() {
   const movements = data?.data || []
   const items = itemsData?.data || []
   const warehouses = warehousesData?.data || []
+  const branches = branchesData?.data || []
+  const users = usersData?.data || []
+
+  const handleResetFilters = () => {
+    setSearchVal('')
+    setMovementType('')
+    setItemId('')
+    setWarehouseId('')
+    setBranchId('')
+    setUserId('')
+    setStartDate('')
+    setEndDate('')
+    setMinQty('')
+    setMaxQty('')
+  }
 
   const openCreateModal = () => {
     setItem('')
@@ -491,13 +541,156 @@ function MovementsTab() {
 
   return (
     <div className="flex flex-col h-full relative">
-      <div className="p-4 border-b border-slate-200 flex justify-end">
-        <button
-          onClick={openCreateModal}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-        >
-          {t('warehouse.movements.new_movement')}
-        </button>
+      {/* Search and Filters panel */}
+      <div className="p-4 border-b border-slate-200 bg-slate-50/50 space-y-4">
+        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+          <div className="relative flex-1 w-full">
+            <input
+              type="text"
+              value={searchVal}
+              onChange={e => setSearchVal(e.target.value)}
+              placeholder={t('warehouse.filters.search') || "İzlew..."}
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+            <span className="absolute left-3.5 top-3.5 text-slate-400 text-sm">🔍</span>
+          </div>
+
+          <div className="flex gap-2 w-full md:w-auto justify-end">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="px-4 py-2 text-sm font-medium border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-colors"
+            >
+              <span>{showFilters ? '▲' : '▼'}</span> {t('warehouse.filters.more') || "Filtrler"}
+            </button>
+            {(searchVal || movementType || itemId || warehouseId || branchId || userId || startDate || endDate || minQty || maxQty) && (
+              <button
+                onClick={handleResetFilters}
+                className="px-4 py-2 text-sm font-medium border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+              >
+                {t('warehouse.filters.reset') || "Tazalaw"}
+              </button>
+            )}
+            <button
+              onClick={openCreateModal}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm"
+            >
+              {t('warehouse.movements.new_movement')}
+            </button>
+          </div>
+        </div>
+
+        {/* Collapsible filters grid */}
+        {showFilters && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-2 border-t border-slate-200/60 animate-in fade-in duration-200">
+            {/* Movement Type */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.movements.table.type') || "Háreket túri"}</label>
+              <CustomSelect
+                value={movementType}
+                onChange={setMovementType}
+                placeholder={t('warehouse.items.modal.not_selected')}
+                options={[
+                  { value: 'in', label: t('warehouse.movements.modal.type_in') },
+                  { value: 'out', label: t('warehouse.movements.modal.type_out') },
+                  { value: 'transfer', label: t('warehouse.movements.modal.type_transfer') }
+                ]}
+              />
+            </div>
+
+            {/* Item */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.movements.modal.item')}</label>
+              <CustomSelect
+                value={itemId}
+                onChange={setItemId}
+                placeholder={t('warehouse.items.modal.not_selected')}
+                options={items.map((i: any) => ({ value: i.id, label: i.name }))}
+              />
+            </div>
+
+            {/* Warehouse */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.movements.modal.warehouse')}</label>
+              <CustomSelect
+                value={warehouseId}
+                onChange={setWarehouseId}
+                placeholder={t('warehouse.items.modal.not_selected')}
+                options={warehouses.map((w: any) => ({ value: w.id, label: w.name }))}
+              />
+            </div>
+
+            {/* Warehouse Branch */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('sidebar.branches')}</label>
+              <CustomSelect
+                value={branchId}
+                onChange={setBranchId}
+                placeholder={t('warehouse.items.modal.not_selected')}
+                options={branches.map((b: any) => ({ value: b.id, label: b.name }))}
+              />
+            </div>
+
+            {/* User */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.filters.user') || "Paydalanıwshı"}</label>
+              <CustomSelect
+                value={userId}
+                onChange={setUserId}
+                placeholder={t('warehouse.items.modal.not_selected')}
+                options={users.map((u: any) => ({ 
+                  value: u.id, 
+                  label: u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.username 
+                }))}
+              />
+            </div>
+
+            {/* Start Date */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.filters.start_date') || "Baslanıw sánesi"}</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            {/* End Date */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.filters.end_date') || "Tamamlanıw sánesi"}</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+
+            {/* Min & Max Quantities */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.filters.min_qty') || "Min. muǵdar"}</label>
+                <input
+                  type="number"
+                  value={minQty}
+                  onChange={e => setMinQty(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 mb-1">{t('warehouse.filters.max_qty') || "Maks. muǵdar"}</label>
+                <input
+                  type="number"
+                  value={maxQty}
+                  onChange={e => setMaxQty(e.target.value)}
+                  placeholder="999"
+                  className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Desktop Table View */}
@@ -508,8 +701,11 @@ function MovementsTab() {
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.id')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.item')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.quantity')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.unit')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.type')}</th>
               <th className="px-6 py-4 font-semibold">{t('warehouse.movements.table.warehouse')}</th>
+              <th className="px-6 py-4 font-semibold">{t('warehouse.filters.user')}</th>
+              <th className="px-6 py-4 font-semibold">{t('orders.table.date') || "Sáne"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -520,6 +716,7 @@ function MovementsTab() {
                   {m.item_details?.name || `Item ID: ${m.item}`}
                 </td>
                 <td className="px-6 py-4 text-sm font-bold">{m.quantity}</td>
+                <td className="px-6 py-4 text-sm text-slate-600 font-medium">{m.item_details?.unit_details?.name || '-'}</td>
                 <td className="px-6 py-4 text-sm">
                   <span className={clsx(
                     "inline-flex px-2.5 py-1 rounded-md text-xs font-semibold",
@@ -545,6 +742,16 @@ function MovementsTab() {
                   ) : (
                     m.warehouse_details?.name || `W: ${m.warehouse}`
                   )}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-600">
+                  {m.user_details ? (
+                    `${m.user_details.first_name || ''} ${m.user_details.last_name || ''}`.trim() || m.user_details.username
+                  ) : (
+                    m.user || '-'
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-500">
+                  {m.date ? new Date(m.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
                 </td>
               </tr>
             ))}
@@ -579,7 +786,9 @@ function MovementsTab() {
             <div className="grid grid-cols-2 gap-2 text-xs text-slate-500 mt-1">
               <div>
                 <span className="block font-medium text-slate-400">{t('warehouse.movements.table.quantity')}</span>
-                <span className="text-slate-900 font-bold">{m.quantity}</span>
+                <span className="text-slate-900 font-bold">
+                  {m.quantity} {m.item_details?.unit_details?.name || ''}
+                </span>
               </div>
               <div>
                 <span className="block font-medium text-slate-400">{t('warehouse.movements.table.warehouse')}</span>
@@ -597,6 +806,20 @@ function MovementsTab() {
                   )}
                 </span>
               </div>
+            </div>
+
+            {/* Date & User info on Mobile */}
+            <div className="flex justify-between text-[11px] text-slate-400 mt-1 border-t border-slate-100/60 pt-1">
+              <span>
+                {m.date ? new Date(m.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
+              </span>
+              <span>
+                {m.user_details ? (
+                  `${m.user_details.first_name || ''} ${m.user_details.last_name || ''}`.trim() || m.user_details.username
+                ) : (
+                  m.user || '-'
+                )}
+              </span>
             </div>
           </div>
         ))}
@@ -620,6 +843,34 @@ function MovementsTab() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {errorMsg && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center">{errorMsg}</div>}
                 
+                {/* Movement Type Toggle */}
+                <div className="flex bg-slate-100 p-1 rounded-xl">
+                  <button
+                    type="button"
+                    disabled={isSatiwshi}
+                    onClick={() => setType('in')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'in' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
+                  >
+                    {t('warehouse.movements.modal.type_in')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSatiwshi}
+                    onClick={() => setType('out')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'out' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
+                  >
+                    {t('warehouse.movements.modal.type_out')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSatiwshi}
+                    onClick={() => setType('transfer')}
+                    className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 ${type === 'transfer' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'} disabled:opacity-50`}
+                  >
+                    {t('warehouse.movements.modal.type_transfer')}
+                  </button>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.item')}</label>
                   <CustomSelect
@@ -639,21 +890,6 @@ function MovementsTab() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('warehouse.movements.modal.type')}</label>
-                  <CustomSelect
-                    value={type}
-                    onChange={setType}
-                    placeholder=""
-                    disabled={isSatiwshi}
-                    options={[
-                      { value: 'in', label: t('warehouse.movements.modal.type_in') },
-                      { value: 'out', label: t('warehouse.movements.modal.type_out') },
-                      { value: 'transfer', label: t('warehouse.movements.modal.type_transfer') }
-                    ]}
                   />
                 </div>
 
@@ -1045,19 +1281,54 @@ function WarehousesList() {
   const { data, isLoading } = useGetWarehouses({ limit: 100 })
   const createWarehouse = useCreateWarehouse()
   const deleteWarehouse = useDeleteWarehouse()
+  const { data: branchesData } = useGetBranches({ limit: 100 })
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [name, setName] = useState('')
+  const [location, setLocation] = useState('')
+  const [branchId, setBranchId] = useState<number | ''>('')
+  const [errorMsg, setErrorMsg] = useState('')
 
   if (isLoading) return <LoadingSpinner small />
   const list = data?.data || []
+  const branches = branchesData?.data || []
 
-  const handleSubmit = (values: Record<string, string>) => {
-    if (values.name) {
-      createWarehouse.mutate({ name: values.name, location: values.location || '' }, {
-        onSuccess: () => { toast.success(t('common.created')); setIsModalOpen(false); },
-        onError: () => toast.error(t('common.error'))
-      })
+  const openCreateModal = () => {
+    setName('')
+    setLocation('')
+    setBranchId('')
+    setErrorMsg('')
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) return
+    if (!branchId) {
+      setErrorMsg(t('warehouse.movements.modal.select_destination_warehouse'))
+      return
     }
+
+    createWarehouse.mutate(
+      {
+        name,
+        location: location || '',
+        branch_id: Number(branchId)
+      },
+      {
+        onSuccess: () => {
+          toast.success(t('common.created'))
+          closeModal()
+        },
+        onError: (err: any) => {
+          setErrorMsg(err.response?.data?.errors?.[0] || t('common.error'))
+        }
+      }
+    )
   }
 
   return (
@@ -1067,28 +1338,84 @@ function WarehousesList() {
           <li key={w.id} className="p-3 bg-white border border-slate-100 rounded-lg text-sm shadow-sm flex justify-between items-start group">
             <div>
               <div className="font-bold">{w.name}</div>
-              <div className="text-xs text-slate-500 mt-1">{w.location}</div>
+              {w.branch && (
+                <div className="text-xs text-indigo-600 font-semibold mt-0.5">
+                  {w.branch.name}
+                </div>
+              )}
+              {w.location && <div className="text-xs text-slate-500 mt-1">{w.location}</div>}
             </div>
             <button onClick={() => deleteWarehouse.mutate(w.id)} className="text-red-500 opacity-0 group-hover:opacity-100 text-xs hover:text-red-700 mt-1">{t('warehouse.settings.delete')}</button>
           </li>
         ))}
         {list.length === 0 && <li className="text-sm text-slate-400">{t('warehouse.settings.empty')}</li>}
       </ul>
-      <button onClick={() => setIsModalOpen(true)} disabled={createWarehouse.isPending} className="mt-4 w-full py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-100">
+      <button onClick={openCreateModal} disabled={createWarehouse.isPending} className="mt-4 w-full py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-100">
         {t('warehouse.settings.add')}
       </button>
 
-      <PromptModal
-        isOpen={isModalOpen}
-        title={t('warehouse.settings.add')}
-        fields={[
-          { name: 'name', label: t('warehouse.settings.prompts.warehouse_name'), required: true },
-          { name: 'location', label: t('warehouse.settings.prompts.warehouse_loc'), required: false }
-        ]}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-        isPending={createWarehouse.isPending}
-      />
+      {/* Warehouse Custom Branch Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex-none flex items-center justify-between p-4 sm:p-5 border-b border-slate-100">
+              <h2 className="text-lg font-bold text-slate-800">{t('warehouse.settings.add')}</h2>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4">
+              {errorMsg && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm text-center">{errorMsg}</div>}
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {t('warehouse.settings.prompts.warehouse_name')}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {t('sidebar.branches')}
+                </label>
+                <CustomSelect
+                  value={branchId}
+                  onChange={setBranchId}
+                  placeholder={t('warehouse.items.modal.not_selected')}
+                  options={branches.map((b: any) => ({ value: b.id, label: b.name }))}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {t('warehouse.settings.prompts.warehouse_loc')}
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                  className="w-full px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button type="button" onClick={closeModal} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base border border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors">
+                  {t('warehouse.items.modal.cancel')}
+                </button>
+                <button type="submit" disabled={createWarehouse.isPending} className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 text-sm sm:text-base bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                  {createWarehouse.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />} {t('warehouse.items.modal.save')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

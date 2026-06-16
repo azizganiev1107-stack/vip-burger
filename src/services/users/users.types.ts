@@ -6,6 +6,9 @@ export interface IUser {
   last_name: string;
   phone: string;
   role?: IRole;
+  role_id?: number;
+  branch?: any;
+  branch_id?: number | null;
   created_at?: string;
   is_active?: boolean;
 }
@@ -16,6 +19,7 @@ export interface IUserCreate {
   phone: string;
   password?: string;
   role_id: number;
+  branch_id?: number | null;
   is_active?: boolean;
 }
 
