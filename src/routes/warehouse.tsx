@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-hot-toast'
+import { useGetAdminProfile } from '@/services/profile'
 import { 
   PackageSearch, 
   Boxes, 
@@ -46,7 +47,18 @@ export const Route = createFileRoute('/warehouse')({
 
 function RouteComponent() {
   const { t } = useTranslation()
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  const { data: profile } = useGetAdminProfile({ enabled: !!token })
+
+  const isSatiwshi = profile?.role?.id === 4 || profile?.role?.code === 'satiwshi' || profile?.role?.name === 'satiwshi' || profile?.role === 'satiwshi'
+
   const [activeTab, setActiveTab] = useState<'items' | 'inventory' | 'movements' | 'suppliers' | 'settings'>('items')
+
+  useEffect(() => {
+    if (isSatiwshi) {
+      setActiveTab('movements')
+    }
+  }, [isSatiwshi])
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6">
@@ -59,20 +71,20 @@ function RouteComponent() {
 
       {/* Tabs */}
       <div className="flex overflow-x-auto whitespace-nowrap scrollbar-none gap-2 border-b border-slate-200 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <TabButton active={activeTab === 'items'} onClick={() => setActiveTab('items')} icon={<PackageSearch className="w-4 h-4" />} label={t('warehouse.tabs.items')} />
-        <TabButton active={activeTab === 'inventory'} onClick={() => setActiveTab('inventory')} icon={<Boxes className="w-4 h-4" />} label={t('warehouse.tabs.inventory')} />
+        {!isSatiwshi && <TabButton active={activeTab === 'items'} onClick={() => setActiveTab('items')} icon={<PackageSearch className="w-4 h-4" />} label={t('warehouse.tabs.items')} />}
+        {!isSatiwshi && <TabButton active={activeTab === 'inventory'} onClick={() => setActiveTab('inventory')} icon={<Boxes className="w-4 h-4" />} label={t('warehouse.tabs.inventory')} />}
         <TabButton active={activeTab === 'movements'} onClick={() => setActiveTab('movements')} icon={<ArrowRightLeft className="w-4 h-4" />} label={t('warehouse.tabs.movements')} />
-        <TabButton active={activeTab === 'suppliers'} onClick={() => setActiveTab('suppliers')} icon={<Truck className="w-4 h-4" />} label={t('warehouse.tabs.suppliers')} />
-        <TabButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<Settings2 className="w-4 h-4" />} label={t('warehouse.tabs.settings')} />
+        {!isSatiwshi && <TabButton active={activeTab === 'suppliers'} onClick={() => setActiveTab('suppliers')} icon={<Truck className="w-4 h-4" />} label={t('warehouse.tabs.suppliers')} />}
+        {!isSatiwshi && <TabButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<Settings2 className="w-4 h-4" />} label={t('warehouse.tabs.settings')} />}
       </div>
 
       {/* Content */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden min-h-[400px]">
-        {activeTab === 'items' && <ItemsTab />}
-        {activeTab === 'inventory' && <InventoryTab />}
+        {!isSatiwshi && activeTab === 'items' && <ItemsTab />}
+        {!isSatiwshi && activeTab === 'inventory' && <InventoryTab />}
         {activeTab === 'movements' && <MovementsTab />}
-        {activeTab === 'suppliers' && <SuppliersTab />}
-        {activeTab === 'settings' && <SettingsTab />}
+        {!isSatiwshi && activeTab === 'suppliers' && <SuppliersTab />}
+        {!isSatiwshi && activeTab === 'settings' && <SettingsTab />}
       </div>
     </div>
   )
@@ -408,6 +420,10 @@ function InventoryTab() {
 
 function MovementsTab() {
   const { t } = useTranslation()
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  const { data: profile } = useGetAdminProfile({ enabled: !!token })
+  const isSatiwshi = profile?.role?.id === 4 || profile?.role?.code === 'satiwshi' || profile?.role?.name === 'satiwshi' || profile?.role === 'satiwshi'
+
   const { data, isLoading } = useGetWarehouseMovements({ limit: 100 })
   const { data: itemsData } = useGetWarehouseItems({ limit: 100 })
   const { data: warehousesData } = useGetWarehouses({ limit: 100 })
@@ -419,7 +435,7 @@ function MovementsTab() {
 
   const [item, setItem] = useState<number | ''>('')
   const [quantity, setQuantity] = useState('')
-  const [type, setType] = useState('in')
+  const [type, setType] = useState('out')
   const [warehouse, setWarehouse] = useState<number | ''>('')
   const [destinationWarehouse, setDestinationWarehouse] = useState<number | ''>('')
 
@@ -430,7 +446,7 @@ function MovementsTab() {
   const openCreateModal = () => {
     setItem('')
     setQuantity('')
-    setType('in')
+    setType('out')
     setWarehouse('')
     setDestinationWarehouse('')
     setErrorMsg('')
@@ -457,7 +473,7 @@ function MovementsTab() {
     const payload = {
       item: Number(item),
       quantity: quantity || '1',
-      movement_type: type,
+      movement_type: isSatiwshi ? 'out' : type,
       warehouse: Number(warehouse),
       destination_warehouse: type === 'transfer' && destinationWarehouse ? Number(destinationWarehouse) : null,
     }
@@ -632,6 +648,7 @@ function MovementsTab() {
                     value={type}
                     onChange={setType}
                     placeholder=""
+                    disabled={isSatiwshi}
                     options={[
                       { value: 'in', label: t('warehouse.movements.modal.type_in') },
                       { value: 'out', label: t('warehouse.movements.modal.type_out') },
