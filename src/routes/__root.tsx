@@ -3,6 +3,7 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { useTranslation } from 'react-i18next'
 import { Toaster } from 'react-hot-toast'
 import { useGetAdminProfile } from '@/services/profile'
+import ReloadPrompt from '@/components/ReloadPrompt'
 import { 
   Package, 
   Menu,
@@ -185,6 +186,7 @@ function RootLayout() {
         </div>
       </main>
 
+      <ReloadPrompt />
       <TanStackRouterDevtools />
       <Toaster position="top-right" />
     </div>
